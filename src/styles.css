@@ -179,5 +179,69 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+}
+
+@utility fs-card {
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--navy) 8%, transparent);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+@utility fs-surface {
+  background:
+    radial-gradient(900px 480px at 12% -8%, color-mix(in srgb, var(--light-blue) 60%, transparent), transparent 60%),
+    radial-gradient(700px 420px at 96% 6%, color-mix(in srgb, var(--pale-teal) 75%, transparent), transparent 62%);
+}
+
+@utility fs-fade-in {
+  animation: fs-fade-in 0.32s ease both;
+}
+
+@keyframes fs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fs-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
