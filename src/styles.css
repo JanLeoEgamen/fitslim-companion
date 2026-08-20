@@ -19,6 +19,21 @@
  */
 
 @theme inline {
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Exo 2", "Work Sans", sans-serif;
+  --color-navy: var(--navy);
+  --color-deep-navy: var(--deep-navy);
+  --color-dark-teal: var(--dark-teal);
+  --color-teal: var(--teal);
+  --color-bright-teal: var(--bright-teal);
+  --color-cobalt: var(--cobalt);
+  --color-smoke: var(--smoke);
+  --color-light-blue: var(--light-blue);
+  --color-pale-teal: var(--pale-teal);
+  --color-soft-green: var(--soft-green);
+  --color-green: var(--green);
+  --color-purple: var(--purple);
+  --color-indigo: var(--indigo);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
