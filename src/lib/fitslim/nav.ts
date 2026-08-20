@@ -1,0 +1,41 @@
+export const KNOWN_PATHS = [
+  "/",
+  "/chat",
+  "/login",
+  "/explore",
+  "/saved",
+  "/blueprint",
+  "/academy",
+  "/history",
+  "/provider-questions",
+  "/grocery-list",
+  "/recipes",
+  "/travel",
+  "/restaurants",
+  "/profile",
+  "/settings",
+  "/safety",
+  "/marketing",
+] as const;
+
+export type KnownPath = (typeof KNOWN_PATHS)[number];
+
+export const NAV_LABELS: Record<KnownPath, string> = {
+  "/": "Home",
+  "/chat": "Chat",
+  "/login": "Log In",
+  "/explore": "Explore",
+  "/saved": "Saved",
+  "/blueprint": "My Blueprint",
+  "/academy": "Academy",
+  "/history": "History",
+  "/provider-questions": "Provider Questions",
+  "/grocery-list": "Grocery List",
+  "/recipes": "Recipes",
+  "/travel": "Travel",
+  "/restaurants": "Restaurants",
+  "/profile": "Profile",
+  "/settings": "Settings",
+  "/safety": "Help & Safety",
+  "/marketing": "Marketing",
+};

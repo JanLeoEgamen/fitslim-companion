@@ -10,33 +10,245 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AcademyRouteImport } from './routes/academy'
+import { Route as BlueprintRouteImport } from './routes/blueprint'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as GroceryListRouteImport } from './routes/grocery-list'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MarketingRouteImport } from './routes/marketing'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ProviderQuestionsRouteImport } from './routes/provider-questions'
+import { Route as RecipesRouteImport } from './routes/recipes'
+import { Route as RestaurantsRouteImport } from './routes/restaurants'
+import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TravelRouteImport } from './routes/travel'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlueprintRoute = BlueprintRouteImport.update({
+  id: '/blueprint',
+  path: '/blueprint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroceryListRoute = GroceryListRouteImport.update({
+  id: '/grocery-list',
+  path: '/grocery-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderQuestionsRoute = ProviderQuestionsRouteImport.update({
+  id: '/provider-questions',
+  path: '/provider-questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesRoute = RecipesRouteImport.update({
+  id: '/recipes',
+  path: '/recipes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RestaurantsRoute = RestaurantsRouteImport.update({
+  id: '/restaurants',
+  path: '/restaurants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TravelRoute = TravelRouteImport.update({
+  id: '/travel',
+  path: '/travel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
+  '/blueprint': typeof BlueprintRoute
+  '/chat': typeof ChatRoute
+  '/explore': typeof ExploreRoute
+  '/grocery-list': typeof GroceryListRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
+  '/profile': typeof ProfileRoute
+  '/provider-questions': typeof ProviderQuestionsRoute
+  '/recipes': typeof RecipesRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/safety': typeof SafetyRoute
+  '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
+  '/travel': typeof TravelRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
+  '/blueprint': typeof BlueprintRoute
+  '/chat': typeof ChatRoute
+  '/explore': typeof ExploreRoute
+  '/grocery-list': typeof GroceryListRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
+  '/profile': typeof ProfileRoute
+  '/provider-questions': typeof ProviderQuestionsRoute
+  '/recipes': typeof RecipesRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/safety': typeof SafetyRoute
+  '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
+  '/travel': typeof TravelRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
+  '/blueprint': typeof BlueprintRoute
+  '/chat': typeof ChatRoute
+  '/explore': typeof ExploreRoute
+  '/grocery-list': typeof GroceryListRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/marketing': typeof MarketingRoute
+  '/profile': typeof ProfileRoute
+  '/provider-questions': typeof ProviderQuestionsRoute
+  '/recipes': typeof RecipesRoute
+  '/restaurants': typeof RestaurantsRoute
+  '/safety': typeof SafetyRoute
+  '/saved': typeof SavedRoute
+  '/settings': typeof SettingsRoute
+  '/travel': typeof TravelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/academy'
+    | '/blueprint'
+    | '/chat'
+    | '/explore'
+    | '/grocery-list'
+    | '/history'
+    | '/login'
+    | '/marketing'
+    | '/profile'
+    | '/provider-questions'
+    | '/recipes'
+    | '/restaurants'
+    | '/safety'
+    | '/saved'
+    | '/settings'
+    | '/travel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/academy'
+    | '/blueprint'
+    | '/chat'
+    | '/explore'
+    | '/grocery-list'
+    | '/history'
+    | '/login'
+    | '/marketing'
+    | '/profile'
+    | '/provider-questions'
+    | '/recipes'
+    | '/restaurants'
+    | '/safety'
+    | '/saved'
+    | '/settings'
+    | '/travel'
+  id:
+    | '__root__'
+    | '/'
+    | '/academy'
+    | '/blueprint'
+    | '/chat'
+    | '/explore'
+    | '/grocery-list'
+    | '/history'
+    | '/login'
+    | '/marketing'
+    | '/profile'
+    | '/provider-questions'
+    | '/recipes'
+    | '/restaurants'
+    | '/safety'
+    | '/saved'
+    | '/settings'
+    | '/travel'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcademyRoute: typeof AcademyRoute
+  BlueprintRoute: typeof BlueprintRoute
+  ChatRoute: typeof ChatRoute
+  ExploreRoute: typeof ExploreRoute
+  GroceryListRoute: typeof GroceryListRoute
+  HistoryRoute: typeof HistoryRoute
+  LoginRoute: typeof LoginRoute
+  MarketingRoute: typeof MarketingRoute
+  ProfileRoute: typeof ProfileRoute
+  ProviderQuestionsRoute: typeof ProviderQuestionsRoute
+  RecipesRoute: typeof RecipesRoute
+  RestaurantsRoute: typeof RestaurantsRoute
+  SafetyRoute: typeof SafetyRoute
+  SavedRoute: typeof SavedRoute
+  SettingsRoute: typeof SettingsRoute
+  TravelRoute: typeof TravelRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +260,139 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blueprint': {
+      id: '/blueprint'
+      path: '/blueprint'
+      fullPath: '/blueprint'
+      preLoaderRoute: typeof BlueprintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grocery-list': {
+      id: '/grocery-list'
+      path: '/grocery-list'
+      fullPath: '/grocery-list'
+      preLoaderRoute: typeof GroceryListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketing': {
+      id: '/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-questions': {
+      id: '/provider-questions'
+      path: '/provider-questions'
+      fullPath: '/provider-questions'
+      preLoaderRoute: typeof ProviderQuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes': {
+      id: '/recipes'
+      path: '/recipes'
+      fullPath: '/recipes'
+      preLoaderRoute: typeof RecipesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/restaurants': {
+      id: '/restaurants'
+      path: '/restaurants'
+      fullPath: '/restaurants'
+      preLoaderRoute: typeof RestaurantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/travel': {
+      id: '/travel'
+      path: '/travel'
+      fullPath: '/travel'
+      preLoaderRoute: typeof TravelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcademyRoute: AcademyRoute,
+  BlueprintRoute: BlueprintRoute,
+  ChatRoute: ChatRoute,
+  ExploreRoute: ExploreRoute,
+  GroceryListRoute: GroceryListRoute,
+  HistoryRoute: HistoryRoute,
+  LoginRoute: LoginRoute,
+  MarketingRoute: MarketingRoute,
+  ProfileRoute: ProfileRoute,
+  ProviderQuestionsRoute: ProviderQuestionsRoute,
+  RecipesRoute: RecipesRoute,
+  RestaurantsRoute: RestaurantsRoute,
+  SafetyRoute: SafetyRoute,
+  SavedRoute: SavedRoute,
+  SettingsRoute: SettingsRoute,
+  TravelRoute: TravelRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
