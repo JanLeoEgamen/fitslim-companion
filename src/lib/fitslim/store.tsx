@@ -13,7 +13,6 @@ import {
   INITIAL_GROCERY,
   INITIAL_SAVED,
   MEMBER,
-  TODAY_FOCUS,
   type AdminUser,
   type AdminUserRole,
   type AdminUserStatus,
@@ -153,7 +152,7 @@ type Store = {
   requestChatFocus: (key: ConversationKey) => void;
   clearChatFocus: () => void;
   saved: SavedItem[];
-  saveItem: (item: Omit<SavedItem, "id" | "savedAt">) => void;
+  saveItem: (item: Omit<SavedItem, "id" | "savedAt" | "content"> & { content?: string }) => void;
   removeSaved: (id: string) => void;
   grocery: GroceryItem[];
   toggleGrocery: (id: string) => void;
@@ -163,16 +162,12 @@ type Store = {
   providerQuestions: { id: string; text: string }[];
   addProviderQuestion: (text: string) => void;
   removeProviderQuestion: (id: string) => void;
-  focus: typeof TODAY_FOCUS;
-  toggleFocus: (id: string) => void;
   prefs: Prefs;
   setPrefs: (p: Partial<Prefs>) => void;
   theme: ThemeMode;
   setTheme: (t: ThemeMode) => void;
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
-  panelOpen: boolean;
-  togglePanel: () => void;
   member: typeof MEMBER;
   usersApi: UsersApi;
 };
@@ -228,17 +223,17 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
   const [drafts, setDrafts] = useState<Partial<Record<ConversationKey, string>>>({});
   const [chatFocus, setChatFocus] = useState<ChatFocus | null>(null);
   const [saved, setSaved] = useState<SavedItem[]>(INITIAL_SAVED);
+  const savedRef = useRef(saved);
+  savedRef.current = saved;
   const [grocery, setGrocery] = useState<GroceryItem[]>(INITIAL_GROCERY);
   const [providerQuestions, setProviderQuestions] = useState<{ id: string; text: string }[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [member, setMember] = useState<typeof MEMBER>(() => toMember(profile));
-  const [focus, setFocus] = useState(TODAY_FOCUS);
   const conversationsRef = useRef(conversations);
   conversationsRef.current = conversations;
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(true);
   const [prefs, setPrefsState] = useState<Prefs>({
     remember: true,
     usePastConversations: true,
@@ -280,7 +275,6 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     setSaved(INITIAL_SAVED);
     setGrocery(INITIAL_GROCERY);
     setProviderQuestions([]);
-    setFocus(TODAY_FOCUS);
     setPrefsState({
       remember: true,
       usePastConversations: true,
@@ -315,20 +309,10 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     setGrocery(data.grocery.length ? data.grocery : INITIAL_GROCERY);
     setProviderQuestions(data.providerQuestions);
 
-    // Merge persisted done-state into the fixed TODAY_FOCUS list (match by title).
-    if (data.focusDone) {
-      setFocus((list) =>
-        list.map((item) =>
-          data.focusDone[item.title] !== undefined ? { ...item, done: !!data.focusDone[item.title] } : item,
-        ),
-      );
-    }
-
     if (data.preferences) {
       const p = data.preferences;
       if (typeof p.theme === "string") setTheme(p.theme as ThemeMode);
       if (typeof p.sidebar_collapsed === "boolean") setSidebarCollapsed(p.sidebar_collapsed);
-      if (typeof p.panel_open === "boolean") setPanelOpen(p.panel_open);
       setPrefsState((cur) => ({
         ...cur,
         remember: p.remember ?? cur.remember,
@@ -413,23 +397,26 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
   }, []);
 
   const saveItem = useCallback<Store["saveItem"]>((item) => {
-    setSaved((s) => {
-      if (s.some((x) => x.title === item.title)) return s;
-      // Optimistic insert; reconcile with the DB id once created.
-      const local: SavedItem = { ...item, id: newId(), savedAt: "Today" };
-      persistence
-        .createSaved(item)
-        .then((row) => {
-          setSaved((cur) => cur.map((x) => (x.id === local.id ? row : x)));
-        })
-        .catch((error) => {
-          console.error("[store] save failed:", error);
-          setSaved((cur) => cur.filter((x) => x.id !== local.id));
-          toast.error("Could not save", { description: "Please try again." });
-        });
-      return [local, ...s];
-    });
-    toast.success("Saved", { description: `${item.title} was added to Saved.` });
+    // If it's already in the list, don't re-insert (title-based dedup).
+    if (savedRef.current.some((x) => x.title === item.title)) {
+      toast.success("Already saved", { description: `${item.title} is already in Saved.` });
+      return;
+    }
+    // Build the optimistic row OUTSIDE the state updater so the updater stays pure
+    // (React can re-invoke updaters; the DB write must happen exactly once).
+    const local: SavedItem = { ...item, content: item.content ?? item.summary ?? "", id: newId(), savedAt: "Today" };
+    setSaved((s) => [local, ...s]);
+    persistence
+      .createSaved(local)
+      .then((row) => {
+        setSaved((cur) => cur.map((x) => (x.id === local.id ? row : x)));
+        toast.success("Saved", { description: `${item.title} was added to Saved.` });
+      })
+      .catch((error) => {
+        console.error("[store] save failed:", error);
+        setSaved((cur) => cur.filter((x) => x.id !== local.id));
+        toast.error("Could not save", { description: "Please try again." });
+      });
   }, []);
 
   const createUser = useCallback(
@@ -637,19 +624,6 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
           console.error("[store] delete provider question failed:", error);
         });
       },
-      focus,
-      toggleFocus: (id) => {
-        setFocus((f) => {
-          const next = f.map((i) => (i.id === id ? { ...i, done: !i.done } : i));
-          const item = next.find((i) => i.id === id);
-          if (item) {
-            persistence.setFocusDone(item.title, item.copy, item.icon, item.done).catch((error) => {
-              console.error("[store] toggle focus failed:", error);
-            });
-          }
-          return next;
-        });
-      },
       prefs,
       setPrefs: (p) => {
         setPrefsState((cur) => {
@@ -682,13 +656,6 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
           persistence.savePreferences({ sidebar_collapsed: nv }).catch(() => {});
           return nv;
         }),
-      panelOpen,
-      togglePanel: () =>
-        setPanelOpen((v) => {
-          const nv = !v;
-          persistence.savePreferences({ panel_open: nv }).catch(() => {});
-          return nv;
-        }),
       member,
       usersApi: {
         users,
@@ -713,11 +680,9 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       saveItem,
       grocery,
       providerQuestions,
-      focus,
       prefs,
       theme,
       sidebarCollapsed,
-      panelOpen,
       member,
       users,
       usersLoading,

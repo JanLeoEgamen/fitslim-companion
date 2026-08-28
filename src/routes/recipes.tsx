@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, UtensilsCrossed } from "lucide-react";
+import { Bookmark, Check, Clock, UtensilsCrossed } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionPage } from "@/components/fitslim/SectionPage";
+import { SaveConfirmDialog } from "@/components/fitslim/SaveConfirmDialog";
 import { useFitSlim } from "@/lib/fitslim/store";
 import { SECTIONS_BY_SLUG } from "@/lib/fitslim/sections";
 import { RECIPES } from "@/lib/fitslim/data";
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/recipes")({
 });
 
 function Recipes() {
-  const { saveItem, addGrocery } = useFitSlim();
+  const { saveItem, addGrocery, saved } = useFitSlim();
 
   return (
     <SectionPage section={SECTIONS_BY_SLUG.recipes}>
@@ -66,19 +67,33 @@ function Recipes() {
                 ))}
               </ol>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  className="rounded-[12px] bg-teal text-white hover:bg-bright-teal"
-                  onClick={() =>
-                    saveItem({
-                      title: recipe.title,
-                      category: "Recipes",
-                      summary: `${recipe.minutes}-minute ${recipe.tag.toLowerCase()} recipe.`,
-                    })
-                  }
-                >
-                  Save Recipe
-                </Button>
+                {saved.some((x) => x.title === recipe.title) ? (
+                  <Button
+                    size="sm"
+                    disabled
+                    className="gap-1 rounded-[12px] border border-teal/40 bg-pale-teal text-navy"
+                  >
+                    <Check className="h-3.5 w-3.5 text-teal" /> Saved
+                  </Button>
+                ) : (
+                  <SaveConfirmDialog
+                    onConfirm={() =>
+                      saveItem({
+                        title: recipe.title,
+                        category: "Recipes",
+                        summary: `${recipe.minutes}-minute ${recipe.tag.toLowerCase()} recipe.`,
+                      })
+                    }
+                    title={recipe.title}
+                  >
+                    <Button
+                      size="sm"
+                      className="gap-1 rounded-[12px] bg-teal text-white hover:bg-bright-teal"
+                    >
+                      <Bookmark className="h-3.5 w-3.5" /> Save Recipe
+                    </Button>
+                  </SaveConfirmDialog>
+                )}
                 <Button
                   size="sm"
                   variant="outline"

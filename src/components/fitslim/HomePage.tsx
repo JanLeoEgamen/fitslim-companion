@@ -2,32 +2,23 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Bookmark,
-  Check,
   MessageCircle,
   ShoppingBasket,
   Sparkles,
-  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { PageLayout } from "./PageLayout";
 import { useFitSlim } from "@/lib/fitslim/store";
 import { SECTIONS } from "@/lib/fitslim/sections";
-import { cn } from "@/lib/utils";
 
 const QUICK_ACTIONS = [
   { label: "Ask FitSlim AI", to: "/chat", icon: MessageCircle },
   { label: "Grocery List", to: "/grocery-list", icon: ShoppingBasket },
   { label: "Saved", to: "/saved", icon: Bookmark },
-  { label: "My Blueprint", to: "/blueprint", icon: Target },
 ] as const;
 
 export function HomePage() {
-  const { member, focus, toggleFocus, send, requestChatFocus } = useFitSlim();
-
-  const done = focus.filter((item) => item.done).length;
-  const total = focus.length;
-  const pct = Math.round((done / total) * 100);
+  const { member, send, requestChatFocus } = useFitSlim();
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -72,64 +63,6 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Today's focus */}
-      <section className="mb-6 rounded-[20px] border border-border bg-card p-5 shadow-soft">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-base font-bold text-navy">Today's Focus</h2>
-          <span className="text-xs font-semibold text-muted-foreground">
-            {done} / {total} · {pct}%
-          </span>
-        </div>
-        <Progress
-          value={pct}
-          className="mt-2 h-2 bg-soft-green"
-          aria-label="Today's focus progress"
-        />
-        <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {focus.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => toggleFocus(item.id)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-[14px] border px-3 py-2.5 text-left transition",
-                  item.done
-                    ? "border-teal/30 bg-pale-teal/60"
-                    : "border-border bg-background hover:border-teal/40",
-                )}
-                aria-label={
-                  item.done ? `Mark ${item.title} as not done` : `Mark ${item.title} as done`
-                }
-              >
-                <span
-                  className={cn(
-                    "grid size-5 shrink-0 place-items-center rounded-full border",
-                    item.done
-                      ? "border-teal bg-teal text-white"
-                      : "border-teal/40 text-transparent",
-                  )}
-                  aria-hidden="true"
-                >
-                  <Check className="h-3 w-3" />
-                </span>
-                <span className="min-w-0 leading-tight">
-                  <span
-                    className={cn(
-                      "block text-[13px] font-semibold",
-                      item.done ? "text-muted-foreground" : "text-navy",
-                    )}
-                  >
-                    {item.icon} {item.title}
-                  </span>
-                  <span className="block truncate text-[11px] text-muted-foreground">
-                    {item.copy}
-                  </span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
       {/* Section trailers */}
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-display text-lg font-bold tracking-tight text-navy">

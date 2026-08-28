@@ -345,6 +345,7 @@ export type SavedItem = {
   category: "Recipes" | "Meal Plans" | "Tips" | "Conversations";
   savedAt: string;
   summary: string;
+  content: string;
 };
 
 export const INITIAL_SAVED: SavedItem[] = [
@@ -354,6 +355,7 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Recipes",
     savedAt: "Aug 19, 2026",
     summary: "Five quick breakfasts built around protein.",
+    content: "Five quick breakfasts built around protein. Try a Greek yogurt power bowl, an egg scramble, or overnight oats with protein powder.",
   },
   {
     id: "s2",
@@ -361,6 +363,7 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Tips",
     savedAt: "Aug 18, 2026",
     summary: "How to read any menu with confidence.",
+    content: "How to read any menu with confidence. Look for grilled, baked or steamed options, ask for sauces on the side, and lead with vegetables and a lean protein.",
   },
   {
     id: "s3",
@@ -368,6 +371,7 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Meal Plans",
     savedAt: "Aug 17, 2026",
     summary: "Higher-protein breakfasts, lunches and dinners.",
+    content: "A higher-protein plan across three easy days. Breakfasts, lunches and dinners built around lean protein, vegetables and whole grains.",
   },
   {
     id: "s4",
@@ -375,6 +379,7 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Tips",
     savedAt: "Aug 15, 2026",
     summary: "A gentle two-week walking build-up.",
+    content: "A gentle two-week walking build-up. Start with 10–15 minute walks and add a few minutes each day as you feel ready.",
   },
 ];
 
@@ -581,14 +586,6 @@ export const TRAVEL_TIPS = {
   ],
   snacks: ["Greek yogurt cups", "Apple and almonds", "Roasted chickpeas", "String cheese"],
 };
-
-export const TODAY_FOCUS = [
-  { id: "f1", icon: "💧", title: "Hydration", copy: "Drink water regularly", done: true },
-  { id: "f2", icon: "🥗", title: "Nutrition", copy: "Add a protein-focused meal", done: true },
-  { id: "f3", icon: "🚶", title: "Movement", copy: "Take a 15-minute walk", done: false },
-  { id: "f4", icon: "🎓", title: "Learning", copy: "Finish Hydration Basics", done: true },
-  { id: "f5", icon: "😴", title: "Evening", copy: "Wind down by 10pm", done: false },
-];
 
 export const FAQS = [
   {

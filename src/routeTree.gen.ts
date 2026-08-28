@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as BlueprintRouteImport } from './routes/blueprint'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ExerciseRouteImport } from './routes/exercise'
 import { Route as ExploreRouteImport } from './routes/explore'
@@ -42,11 +41,6 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlueprintRoute = BlueprintRouteImport.update({
-  id: '/blueprint',
-  path: '/blueprint',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatRoute = ChatRouteImport.update({
@@ -158,7 +152,6 @@ const TravelRoute = TravelRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
   '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
@@ -184,7 +177,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
   '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
@@ -211,7 +203,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
   '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
@@ -239,7 +230,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/blueprint'
     | '/chat'
     | '/exercise'
     | '/explore'
@@ -265,7 +255,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/blueprint'
     | '/chat'
     | '/exercise'
     | '/explore'
@@ -291,7 +280,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
-    | '/blueprint'
     | '/chat'
     | '/exercise'
     | '/explore'
@@ -318,7 +306,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  BlueprintRoute: typeof BlueprintRoute
   ChatRoute: typeof ChatRoute
   ExerciseRoute: typeof ExerciseRoute
   ExploreRoute: typeof ExploreRoute
@@ -356,13 +343,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blueprint': {
-      id: '/blueprint'
-      path: '/blueprint'
-      fullPath: '/blueprint'
-      preLoaderRoute: typeof BlueprintRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -518,7 +498,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  BlueprintRoute: BlueprintRoute,
   ChatRoute: ChatRoute,
   ExerciseRoute: ExerciseRoute,
   ExploreRoute: ExploreRoute,

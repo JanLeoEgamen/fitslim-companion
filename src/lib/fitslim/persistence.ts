@@ -13,13 +13,6 @@ function errMsg(e: unknown): string {
   return e instanceof Error ? e.message : "Request failed";
 }
 
-function todayIso(): string {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${mm}-${dd}`;
-}
-
 // ---------------------------------------------------------------------------
 // Saved
 // ---------------------------------------------------------------------------
@@ -29,13 +22,14 @@ type SavedRow = {
   title: string;
   category: string;
   summary: string | null;
+  content: string | null;
   created_at: string | null;
 };
 
 export async function loadSaved(): Promise<SavedItem[]> {
   const { data, error } = await supabase
     .from("saved_items")
-    .select("id, title, category, summary, created_at")
+    .select("id, title, category, summary, content, created_at")
     .order("created_at", { ascending: false });
   if (error) throw new Error(errMsg(error));
   return ((data ?? []) as SavedRow[]).map((r) => ({
@@ -44,6 +38,7 @@ export async function loadSaved(): Promise<SavedItem[]> {
     category: (r.category as SavedItem["category"]) ?? "Tips",
     savedAt: r.created_at ?? new Date().toISOString(),
     summary: r.summary ?? "",
+    content: r.content ?? r.summary ?? "",
   }));
 }
 
@@ -52,8 +47,13 @@ export async function createSaved(
 ): Promise<SavedItem> {
   const { data, error } = await supabase
     .from("saved_items")
-    .insert({ title: item.title, category: item.category, summary: item.summary ?? "" })
-    .select("id, title, category, summary, created_at")
+    .insert({
+      title: item.title,
+      category: item.category,
+      summary: item.summary ?? "",
+      content: item.content ?? item.summary ?? "",
+    })
+    .select("id, title, category, summary, content, created_at")
     .single();
   if (error || !data) throw new Error(error ? errMsg(error) : "Failed to save");
   const r = data as SavedRow;
@@ -63,6 +63,7 @@ export async function createSaved(
     category: (r.category as SavedItem["category"]) ?? "Tips",
     savedAt: r.created_at ?? new Date().toISOString(),
     summary: r.summary ?? "",
+    content: r.content ?? r.summary ?? "",
   };
 }
 
@@ -146,47 +147,6 @@ async function deleteProviderQuestion(id: string): Promise<void> {
   if (error) throw new Error(errMsg(error));
 }
 // ---------------------------------------------------------------------------
-// Daily focus — today's items. The app shows TODAY_FOCUS (ids f1..f5); we
-// persist the done-state keyed by (focus_date, title) so the UI keeps its
-// stable ids while the completed flag survives page reloads.
-// ---------------------------------------------------------------------------
-
-type FocusRow = { id: string; title: string; done: boolean };
-
-async function loadFocus(date: string): Promise<Record<string, boolean>> {
-  const { data, error } = await supabase.from("daily_focus").select("title, done").eq("focus_date", date);
-  if (error) throw new Error(errMsg(error));
-  const map: Record<string, boolean> = {};
-  for (const r of data ?? []) map[r.title] = !!r.done;
-  return map;
-}
-
-async function setFocusDone(
-  title: string,
-  copy: string,
-  icon: string,
-  done: boolean,
-): Promise<void> {
-  const date = todayIso();
-  const { data: existing, error: selErr } = await supabase
-    .from("daily_focus")
-    .select("id")
-    .eq("focus_date", date)
-    .eq("title", title)
-    .maybeSingle();
-  if (selErr) throw new Error(errMsg(selErr));
-  if (existing) {
-    const { error } = await supabase.from("daily_focus").update({ done }).eq("id", existing.id);
-    if (error) throw new Error(errMsg(error));
-  } else {
-    const { error } = await supabase
-      .from("daily_focus")
-      .insert({ focus_date: date, title, copy, icon, done });
-    if (error) throw new Error(errMsg(error));
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Preferences — a subset persisted to the single preferences row per user.
 // ---------------------------------------------------------------------------
 
@@ -197,15 +157,12 @@ export type PersistedPrefs = {
   remember: boolean;
   use_past_conversations: boolean;
   sidebar_collapsed: boolean;
-  panel_open: boolean;
 };
 
 export async function loadPreferences(): Promise<Partial<PersistedPrefs> | null> {
   const { data, error } = await supabase
     .from("preferences")
-    .select(
-      "theme, notifications, reduced_motion, remember, use_past_conversations, sidebar_collapsed, panel_open",
-    )
+    .select("theme, notifications, reduced_motion, remember, use_past_conversations, sidebar_collapsed")
     .maybeSingle();
   if (error) throw new Error(errMsg(error));
   return (data as Partial<PersistedPrefs>) ?? null;
@@ -219,19 +176,17 @@ export type PersistedMemberData = {
   saved: SavedItem[];
   grocery: GroceryItem[];
   providerQuestions: { id: string; text: string }[];
-  focusDone: Record<string, boolean>;
   preferences: Partial<PersistedPrefs> | null;
 };
 
 export async function loadMemberData(): Promise<PersistedMemberData> {
-  const [saved, grocery, providerQuestions, focusDone, preferences] = await Promise.all([
+  const [saved, grocery, providerQuestions, preferences] = await Promise.all([
     loadSaved(),
     loadGrocery(),
     loadProviderQuestions(),
-    loadFocus(todayIso()),
     loadPreferences(),
   ]);
-  return { saved, grocery, providerQuestions, focusDone, preferences };
+  return { saved, grocery, providerQuestions, preferences };
 }
 
 export const persistence = {
@@ -242,7 +197,6 @@ export const persistence = {
   deleteGrocery,
   createProviderQuestion,
   deleteProviderQuestion,
-  setFocusDone,
   savePreferences,
 };
 

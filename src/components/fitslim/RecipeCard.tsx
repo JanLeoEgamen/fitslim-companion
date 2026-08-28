@@ -1,11 +1,19 @@
-import { Clock, ListChecks, UtensilsCrossed } from "lucide-react";
+import { Bookmark, Check, Clock, ListChecks, UtensilsCrossed } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SaveConfirmDialog } from "./SaveConfirmDialog";
 import { useFitSlim } from "@/lib/fitslim/store";
 import type { RecipeCardData } from "@/lib/fitslim/ai";
 
 export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
-  const { saveItem, addGrocery } = useFitSlim();
+  const { saveItem, addGrocery, saved } = useFitSlim();
+  const isSaved = saved.some((x) => x.title === recipe.title);
+  const saveValue = {
+    title: recipe.title,
+    category: "Recipes" as const,
+    summary: `${recipe.minutes}-minute recipe with ${recipe.ingredients.length} everyday ingredients.`,
+    content: recipe.ingredients.join(", "),
+  };
 
   return (
     <div className="fs-card my-2.5 overflow-hidden" data-testid="recipe-card">
@@ -51,19 +59,24 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
           </div>
         )}
         <div className="flex flex-wrap gap-2 pt-1">
-          <Button
-            size="sm"
-            className="rounded-[12px] bg-teal text-white hover:bg-bright-teal"
-            onClick={() =>
-              saveItem({
-                title: recipe.title,
-                category: "Recipes",
-                summary: `${recipe.minutes}-minute recipe with ${recipe.ingredients.length} everyday ingredients.`,
-              })
-            }
-          >
-            Save Recipe
-          </Button>
+          {isSaved ? (
+            <Button
+              size="sm"
+              disabled
+              className="gap-1 rounded-[12px] border border-teal/40 bg-pale-teal text-navy"
+            >
+              <Check className="h-3.5 w-3.5 text-teal" /> Saved
+            </Button>
+          ) : (
+            <SaveConfirmDialog onConfirm={() => saveItem(saveValue)} title={recipe.title}>
+              <Button
+                size="sm"
+                className="gap-1 rounded-[12px] bg-teal text-white hover:bg-bright-teal"
+              >
+                <Bookmark className="h-3.5 w-3.5" /> Save Recipe
+              </Button>
+            </SaveConfirmDialog>
+          )}
           <Button
             size="sm"
             variant="outline"

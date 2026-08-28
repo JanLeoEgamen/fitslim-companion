@@ -1,9 +1,10 @@
-import { Bookmark, ChevronRight } from "lucide-react";
+import { Bookmark, Check, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AiMark } from "./AiMark";
 import { Markdown } from "./Markdown";
 import { RecipeCard } from "./RecipeCard";
+import { SaveConfirmDialog } from "./SaveConfirmDialog";
 import { SafetyBanner, type SafetyKind } from "./SafetyBanner";
 import { Button } from "@/components/ui/button";
 import { useFitSlim } from "@/lib/fitslim/store";
@@ -61,7 +62,7 @@ export function MessageBubble({
   message: ChatMessage;
   conversationKey?: ConversationKey;
 }) {
-  const { send, saveItem } = useFitSlim();
+  const { send, saveItem, saved } = useFitSlim();
   const isUser = message.role === "user";
 
   const saveValue = useMemo(
@@ -72,9 +73,12 @@ export function MessageBubble({
             title: titleFromText(message.text),
             category: "Conversations" as const,
             summary: summaryFromText(message.text),
+            content: message.text,
           },
     [isUser, message.text],
   );
+
+  const isSaved = saveValue ? saved.some((x) => x.title === saveValue.title) : false;
 
   if (isUser) {
     return (
@@ -103,17 +107,27 @@ export function MessageBubble({
                 if (action.to) return <SafeLink key={index} to={action.to} />;
                 if (action.save) {
                   const saveValue = action.save;
-                  return (
+                  const alreadySaved = saved.some((x) => x.title === saveValue.title);
+                  return alreadySaved ? (
                     <Button
                       key={index}
                       size="sm"
-                      variant="outline"
-                      className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
-                      onClick={() => saveItem(saveValue)}
+                      disabled
+                      className="gap-1 rounded-[12px] border border-teal/40 bg-pale-teal text-navy"
                     >
-                      <Bookmark className="h-3.5 w-3.5" />
-                      {action.label}
+                      <Check className="h-3.5 w-3.5 text-teal" /> Saved
                     </Button>
+                  ) : (
+                    <SaveConfirmDialog key={index} onConfirm={() => saveItem(saveValue)} title={saveValue.title}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
+                      >
+                        <Bookmark className="h-3.5 w-3.5" />
+                        {action.label}
+                      </Button>
+                    </SaveConfirmDialog>
                   );
                 }
                 return (
@@ -131,16 +145,29 @@ export function MessageBubble({
           )}
           {saveValue && (
             <div className="mt-2.5 flex flex-wrap gap-2 border-t border-border/70 pt-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
-                onClick={() => saveItem(saveValue)}
-                aria-label="Save this answer"
-              >
-                <Bookmark className="h-3.5 w-3.5" />
-                Save answer
-              </Button>
+              {isSaved ? (
+                <Button
+                  size="sm"
+                  disabled
+                  className="gap-1 rounded-[12px] border border-teal/40 bg-pale-teal text-navy"
+                  aria-label="Already saved"
+                >
+                  <Check className="h-3.5 w-3.5 text-teal" />
+                  Saved answer
+                </Button>
+              ) : (
+                <SaveConfirmDialog onConfirm={() => saveItem(saveValue)} title={saveValue.title}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
+                    aria-label="Save this answer"
+                  >
+                    <Bookmark className="h-3.5 w-3.5" />
+                    Save answer
+                  </Button>
+                </SaveConfirmDialog>
+              )}
             </div>
           )}
         </div>

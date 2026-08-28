@@ -18,7 +18,6 @@ import {
   ShoppingBasket,
   Sprout,
   Syringe,
-  Target,
   UserCog,
   UtensilsCrossed,
 } from "lucide-react";
@@ -52,7 +51,6 @@ const MORE_NAV = [
   { to: "/saved", label: "Saved", icon: Bookmark },
   { to: "/grocery-list", label: "Grocery List", icon: ShoppingBasket },
   { to: "/provider-questions", label: "Provider Questions", icon: MessagesSquare },
-  { to: "/blueprint", label: "My Blueprint", icon: Target },
   { to: "/history", label: "History", icon: History },
 ] as const;
 
