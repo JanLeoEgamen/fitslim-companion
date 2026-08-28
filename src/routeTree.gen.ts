@@ -10,14 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AcademyRouteImport } from './routes/academy'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BlueprintRouteImport } from './routes/blueprint'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ExerciseRouteImport } from './routes/exercise'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as Glp1RouteImport } from './routes/glp1'
 import { Route as GroceryListRouteImport } from './routes/grocery-list'
+import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as HydrationRouteImport } from './routes/hydration'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketingRouteImport } from './routes/marketing'
+import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProviderQuestionsRouteImport } from './routes/provider-questions'
 import { Route as RecipesRouteImport } from './routes/recipes'
@@ -25,6 +31,7 @@ import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TravelRouteImport } from './routes/travel'
 
 const IndexRoute = IndexRouteImport.update({
@@ -32,9 +39,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcademyRoute = AcademyRouteImport.update({
-  id: '/academy',
-  path: '/academy',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlueprintRoute = BlueprintRouteImport.update({
@@ -47,9 +54,19 @@ const ChatRoute = ChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExerciseRoute = ExerciseRouteImport.update({
+  id: '/exercise',
+  path: '/exercise',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Glp1Route = Glp1RouteImport.update({
+  id: '/glp1',
+  path: '/glp1',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroceryListRoute = GroceryListRouteImport.update({
@@ -57,9 +74,24 @@ const GroceryListRoute = GroceryListRouteImport.update({
   path: '/grocery-list',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HabitsRoute = HabitsRouteImport.update({
+  id: '/habits',
+  path: '/habits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HydrationRoute = HydrationRouteImport.update({
+  id: '/hydration',
+  path: '/hydration',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -70,6 +102,11 @@ const LoginRoute = LoginRouteImport.update({
 const MarketingRoute = MarketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NutritionRoute = NutritionRouteImport.update({
+  id: '/nutrition',
+  path: '/nutrition',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -107,6 +144,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TravelRoute = TravelRouteImport.update({
   id: '/travel',
   path: '/travel',
@@ -115,14 +157,20 @@ const TravelRoute = TravelRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/academy': typeof AcademyRoute
+  '/admin': typeof AdminRoute
   '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
+  '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
+  '/glp1': typeof Glp1Route
   '/grocery-list': typeof GroceryListRoute
+  '/habits': typeof HabitsRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/hydration': typeof HydrationRoute
   '/login': typeof LoginRoute
   '/marketing': typeof MarketingRoute
+  '/nutrition': typeof NutritionRoute
   '/profile': typeof ProfileRoute
   '/provider-questions': typeof ProviderQuestionsRoute
   '/recipes': typeof RecipesRoute
@@ -130,18 +178,25 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/travel': typeof TravelRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/academy': typeof AcademyRoute
+  '/admin': typeof AdminRoute
   '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
+  '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
+  '/glp1': typeof Glp1Route
   '/grocery-list': typeof GroceryListRoute
+  '/habits': typeof HabitsRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/hydration': typeof HydrationRoute
   '/login': typeof LoginRoute
   '/marketing': typeof MarketingRoute
+  '/nutrition': typeof NutritionRoute
   '/profile': typeof ProfileRoute
   '/provider-questions': typeof ProviderQuestionsRoute
   '/recipes': typeof RecipesRoute
@@ -149,19 +204,26 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/travel': typeof TravelRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/academy': typeof AcademyRoute
+  '/admin': typeof AdminRoute
   '/blueprint': typeof BlueprintRoute
   '/chat': typeof ChatRoute
+  '/exercise': typeof ExerciseRoute
   '/explore': typeof ExploreRoute
+  '/glp1': typeof Glp1Route
   '/grocery-list': typeof GroceryListRoute
+  '/habits': typeof HabitsRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/hydration': typeof HydrationRoute
   '/login': typeof LoginRoute
   '/marketing': typeof MarketingRoute
+  '/nutrition': typeof NutritionRoute
   '/profile': typeof ProfileRoute
   '/provider-questions': typeof ProviderQuestionsRoute
   '/recipes': typeof RecipesRoute
@@ -169,20 +231,27 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/travel': typeof TravelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/academy'
+    | '/admin'
     | '/blueprint'
     | '/chat'
+    | '/exercise'
     | '/explore'
+    | '/glp1'
     | '/grocery-list'
+    | '/habits'
     | '/history'
+    | '/home'
+    | '/hydration'
     | '/login'
     | '/marketing'
+    | '/nutrition'
     | '/profile'
     | '/provider-questions'
     | '/recipes'
@@ -190,18 +259,25 @@ export interface FileRouteTypes {
     | '/safety'
     | '/saved'
     | '/settings'
+    | '/signup'
     | '/travel'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/academy'
+    | '/admin'
     | '/blueprint'
     | '/chat'
+    | '/exercise'
     | '/explore'
+    | '/glp1'
     | '/grocery-list'
+    | '/habits'
     | '/history'
+    | '/home'
+    | '/hydration'
     | '/login'
     | '/marketing'
+    | '/nutrition'
     | '/profile'
     | '/provider-questions'
     | '/recipes'
@@ -209,18 +285,25 @@ export interface FileRouteTypes {
     | '/safety'
     | '/saved'
     | '/settings'
+    | '/signup'
     | '/travel'
   id:
     | '__root__'
     | '/'
-    | '/academy'
+    | '/admin'
     | '/blueprint'
     | '/chat'
+    | '/exercise'
     | '/explore'
+    | '/glp1'
     | '/grocery-list'
+    | '/habits'
     | '/history'
+    | '/home'
+    | '/hydration'
     | '/login'
     | '/marketing'
+    | '/nutrition'
     | '/profile'
     | '/provider-questions'
     | '/recipes'
@@ -228,19 +311,26 @@ export interface FileRouteTypes {
     | '/safety'
     | '/saved'
     | '/settings'
+    | '/signup'
     | '/travel'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AcademyRoute: typeof AcademyRoute
+  AdminRoute: typeof AdminRoute
   BlueprintRoute: typeof BlueprintRoute
   ChatRoute: typeof ChatRoute
+  ExerciseRoute: typeof ExerciseRoute
   ExploreRoute: typeof ExploreRoute
+  Glp1Route: typeof Glp1Route
   GroceryListRoute: typeof GroceryListRoute
+  HabitsRoute: typeof HabitsRoute
   HistoryRoute: typeof HistoryRoute
+  HomeRoute: typeof HomeRoute
+  HydrationRoute: typeof HydrationRoute
   LoginRoute: typeof LoginRoute
   MarketingRoute: typeof MarketingRoute
+  NutritionRoute: typeof NutritionRoute
   ProfileRoute: typeof ProfileRoute
   ProviderQuestionsRoute: typeof ProviderQuestionsRoute
   RecipesRoute: typeof RecipesRoute
@@ -248,6 +338,7 @@ export interface RootRouteChildren {
   SafetyRoute: typeof SafetyRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
+  SignupRoute: typeof SignupRoute
   TravelRoute: typeof TravelRoute
 }
 
@@ -260,11 +351,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/academy': {
-      id: '/academy'
-      path: '/academy'
-      fullPath: '/academy'
-      preLoaderRoute: typeof AcademyRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blueprint': {
@@ -281,11 +372,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exercise': {
+      id: '/exercise'
+      path: '/exercise'
+      fullPath: '/exercise'
+      preLoaderRoute: typeof ExerciseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glp1': {
+      id: '/glp1'
+      path: '/glp1'
+      fullPath: '/glp1'
+      preLoaderRoute: typeof Glp1RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/grocery-list': {
@@ -295,11 +400,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroceryListRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/habits': {
+      id: '/habits'
+      path: '/habits'
+      fullPath: '/habits'
+      preLoaderRoute: typeof HabitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hydration': {
+      id: '/hydration'
+      path: '/hydration'
+      fullPath: '/hydration'
+      preLoaderRoute: typeof HydrationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -314,6 +440,13 @@ declare module '@tanstack/react-router' {
       path: '/marketing'
       fullPath: '/marketing'
       preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nutrition': {
+      id: '/nutrition'
+      path: '/nutrition'
+      fullPath: '/nutrition'
+      preLoaderRoute: typeof NutritionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -365,6 +498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/travel': {
       id: '/travel'
       path: '/travel'
@@ -377,14 +517,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AcademyRoute: AcademyRoute,
+  AdminRoute: AdminRoute,
   BlueprintRoute: BlueprintRoute,
   ChatRoute: ChatRoute,
+  ExerciseRoute: ExerciseRoute,
   ExploreRoute: ExploreRoute,
+  Glp1Route: Glp1Route,
   GroceryListRoute: GroceryListRoute,
+  HabitsRoute: HabitsRoute,
   HistoryRoute: HistoryRoute,
+  HomeRoute: HomeRoute,
+  HydrationRoute: HydrationRoute,
   LoginRoute: LoginRoute,
   MarketingRoute: MarketingRoute,
+  NutritionRoute: NutritionRoute,
   ProfileRoute: ProfileRoute,
   ProviderQuestionsRoute: ProviderQuestionsRoute,
   RecipesRoute: RecipesRoute,
@@ -392,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   SafetyRoute: SafetyRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
+  SignupRoute: SignupRoute,
   TravelRoute: TravelRoute,
 }
 export const routeTree = rootRouteImport

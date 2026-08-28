@@ -1,42 +1,52 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AiMark } from "@/components/fitslim/AiMark";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
-  const navigate = useNavigate();
+  const { signIn, resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!email.trim() || !password) {
       toast.error("Please enter your email and password.");
       return;
     }
     setLoading(true);
-    window.setTimeout(() => {
-      setLoading(false);
-      toast.success("Welcome back, Sarah!", { description: "You're signed in to FitSlim AI." });
-      navigate({ to: "/chat" });
-    }, 900);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+    if (error) {
+      toast.error("Sign-in failed", { description: error });
+      return;
+    }
+    // AuthGate handles the post-auth redirect based on role (admin → /admin, member → /home).
+    toast.success("Welcome back!", { description: "You're signed in to FitSlim AI." });
   };
 
-  const startAssessment = () => {
-    toast("Assessment coming soon", { description: "Opening the app so you can explore the demo instead." });
-    navigate({ to: "/chat" });
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Enter your email above to receive a reset link.");
+      return;
+    }
+    const { error } = await resetPassword(email);
+    toast(error ? "Could not send reset link" : "Password reset link sent", {
+      description: error ?? "Check your inbox for a secure reset link.",
+    });
   };
 
   return (
@@ -44,8 +54,14 @@ function Login() {
       <div className="flex min-h-screen flex-col lg:flex-row">
         {/* Brand panel */}
         <aside className="relative hidden overflow-hidden bg-gradient-to-br from-navy via-deep-navy to-dark-teal lg:flex lg:w-[46%] lg:flex-col lg:justify-between lg:p-12">
-          <div className="absolute -right-24 -top-24 size-96 rounded-full bg-teal/20 blur-3xl" aria-hidden="true" />
-          <div className="absolute -bottom-32 -left-20 size-80 rounded-full bg-light-blue/10 blur-3xl" aria-hidden="true" />
+          <div
+            className="absolute -right-24 -top-24 size-96 rounded-full bg-teal/20 blur-3xl"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute -bottom-32 -left-20 size-80 rounded-full bg-light-blue/10 blur-3xl"
+            aria-hidden="true"
+          />
           <Link to="/" className="relative flex items-center gap-2.5 text-white">
             <span className="grid size-10 place-items-center rounded-[14px] bg-white/10">
               <AiMark size={28} />
@@ -59,8 +75,8 @@ function Login() {
               Bring your everyday questions about health.
             </h1>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-pale-teal">
-              Log in to get practical educational support for meals, hydration, movement, travel, healthy habits, and
-              questions for your care team.
+              Log in to get practical educational support for meals, hydration, movement, travel,
+              healthy habits, and questions for your care team.
             </p>
             <ul className="mt-6 space-y-2.5 text-sm text-pale-teal">
               {[
@@ -93,7 +109,9 @@ function Login() {
 
             <div className="rounded-[24px] border border-border bg-card p-6 shadow-lift sm:p-8">
               <h2 className="font-display text-2xl font-bold text-navy">Welcome back</h2>
-              <p className="mt-1.5 text-sm text-muted-foreground">Log in to your FitSlim AI companion.</p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                Log in to your FitSlim AI companion.
+              </p>
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div className="space-y-1.5">
@@ -143,7 +161,7 @@ function Login() {
                   </label>
                   <button
                     type="button"
-                    onClick={() => toast("Password reset link sent", { description: "(Demo) We'd email you a secure reset link." })}
+                    onClick={handleForgotPassword}
                     className="text-sm font-medium text-teal transition hover:underline"
                   >
                     Forgot password?
@@ -153,7 +171,7 @@ function Login() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="h-11 w-full gap-1.5 rounded-[12px] bg-navy text-[15px] font-semibold text-white hover:bg-deep-navy"
+                  className="h-11 w-full gap-1.5 rounded-[12px] bg-teal text-[15px] font-semibold text-white hover:bg-bright-teal"
                 >
                   {loading ? (
                     <>
@@ -167,29 +185,20 @@ function Login() {
                 </Button>
               </form>
 
-              <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-                <span className="h-px flex-1 bg-border" /> OR <span className="h-px flex-1 bg-border" />
-              </div>
-
-              <Button
-                variant="outline"
-                className="h-11 w-full gap-1.5 rounded-[12px] border-teal text-[15px] font-semibold text-teal hover:bg-pale-teal"
-                onClick={() => navigate({ to: "/chat" })}
-              >
-                <Sparkles className="h-4 w-4" /> Continue as demo member
-              </Button>
-
               <p className="mt-5 text-center text-sm text-muted-foreground">
                 New to FitSlim?{" "}
-                <button type="button" onClick={startAssessment} className="font-semibold text-teal transition hover:underline">
-                  Start your free assessment
-                </button>
+                <Link
+                  to="/signup"
+                  className="font-semibold text-teal transition hover:underline"
+                >
+                  Create a member account
+                </Link>
               </p>
             </div>
 
             <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
-              This is a mock demo — no accounts are stored. By continuing you agree to the (demo) Terms &amp; Privacy
-              Policy.
+              By continuing you agree to the Terms &amp; Privacy Policy. FitSlim AI provides
+              educational support and does not replace your healthcare provider.
             </p>
           </div>
         </main>

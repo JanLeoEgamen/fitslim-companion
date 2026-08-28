@@ -1,4 +1,16 @@
-export type ChatAction = { label: string; prompt?: string; to?: string; save?: { title: string; category: "Recipes" | "Meal Plans" | "Tips" | "Academy" | "Conversations"; summary: string } };
+import { SECTION_FALLBACKS, SECTION_RULES } from "./section-replies";
+import { type ConversationKey } from "./sections";
+
+export type ChatAction = {
+  label: string;
+  prompt?: string;
+  to?: string;
+  save?: {
+    title: string;
+    category: "Recipes" | "Meal Plans" | "Tips" | "Conversations";
+    summary: string;
+  };
+};
 
 export type RecipeCardData = {
   title: string;
@@ -20,7 +32,7 @@ export type ChatMessage = {
 let seq = 0;
 export const newId = () => `m${Date.now().toString(36)}${(seq += 1)}`;
 
-type Reply = Omit<ChatMessage, "id" | "role" | "createdAt">;
+export type Reply = Omit<ChatMessage, "id" | "role" | "createdAt">;
 
 const rules: { match: RegExp; reply: Reply }[] = [
   {
@@ -36,7 +48,8 @@ If this isn't urgent but still concerning, contact your care team — they know 
     },
   },
   {
-    match: /(dose|dosage|increase my|stop taking|prescribe|prescription|side effect|nausea|zepbound|ozempic|wegovy|mounjaro|glp)/i,
+    match:
+      /(dose|dosage|increase my|stop taking|prescribe|prescription|side effect|nausea|zepbound|ozempic|wegovy|mounjaro|glp)/i,
     reply: {
       safety: "glp1",
       text: `## General GLP-1 nutrition education
@@ -54,7 +67,7 @@ Your individual needs can vary, so follow the guidance from your prescribing pro
 I can't advise on medication, dosing, or symptoms. If you're experiencing significant or concerning symptoms, contact your care team.`,
       actions: [
         { label: "Talk to My Provider", to: "/provider-questions" },
-        { label: "Learn GLP-1 Basics", to: "/academy" },
+        { label: "Learn GLP-1 Basics", to: "/glp1" },
       ],
     },
   },
@@ -95,7 +108,14 @@ Want me to turn this into a grocery list?`,
       actions: [
         { label: "Create Grocery List", prompt: "Create a grocery list." },
         { label: "Give Me 3 More", prompt: "Show me 3 more high-protein breakfasts." },
-        { label: "Save Recipe", save: { title: "5-Minute Greek Yogurt Power Bowl", category: "Recipes", summary: "Quick high-protein breakfast bowl." } },
+        {
+          label: "Save Recipe",
+          save: {
+            title: "5-Minute Greek Yogurt Power Bowl",
+            category: "Recipes",
+            summary: "Quick high-protein breakfast bowl.",
+          },
+        },
       ],
     },
   },
@@ -111,7 +131,14 @@ Want me to turn this into a grocery list?`,
 Each one takes about 10 minutes. Want the ingredients added to your grocery list?`,
       actions: [
         { label: "Create Grocery List", prompt: "Create a grocery list." },
-        { label: "Save These Ideas", save: { title: "5-Minute Protein Breakfasts", category: "Recipes", summary: "Three fast protein-forward breakfast ideas." } },
+        {
+          label: "Save These Ideas",
+          save: {
+            title: "5-Minute Protein Breakfasts",
+            category: "Recipes",
+            summary: "Three fast protein-forward breakfast ideas.",
+          },
+        },
       ],
     },
   },
@@ -137,7 +164,14 @@ Each one takes about 10 minutes. Want the ingredients added to your grocery list
 
 Keep what works, swap what doesn't — this is a starting point, not a rulebook.`,
       actions: [
-        { label: "Save Meal Plan", save: { title: "3-Day Easy Meal Plan", category: "Meal Plans", summary: "Higher-protein breakfasts, lunches and dinners." } },
+        {
+          label: "Save Meal Plan",
+          save: {
+            title: "3-Day Easy Meal Plan",
+            category: "Meal Plans",
+            summary: "Higher-protein breakfasts, lunches and dinners.",
+          },
+        },
         { label: "Create Grocery List", prompt: "Create a grocery list." },
       ],
     },
@@ -204,7 +238,14 @@ Tell me the type of restaurant and I'll get more specific — Italian, Mexican, 
 These are general ideas, not medical or dietary prescriptions.`,
       actions: [
         { label: "Open Restaurant Guide", to: "/restaurants" },
-        { label: "Save Ordering Guide", save: { title: "Healthy Restaurant Ordering Guide", category: "Tips", summary: "A four-step approach for any menu." } },
+        {
+          label: "Save Ordering Guide",
+          save: {
+            title: "Healthy Restaurant Ordering Guide",
+            category: "Tips",
+            summary: "A four-step approach for any menu.",
+          },
+        },
       ],
     },
   },
@@ -229,7 +270,14 @@ These are general ideas, not medical or dietary prescriptions.`,
 Want me to build this around a specific destination and trip length?`,
       actions: [
         { label: "Open Travel Companion", to: "/travel" },
-        { label: "Save Travel Tips", save: { title: "Travel Wellness Strategies", category: "Tips", summary: "Food, hydration and movement defaults for trips." } },
+        {
+          label: "Save Travel Tips",
+          save: {
+            title: "Travel Wellness Strategies",
+            category: "Tips",
+            summary: "Food, hydration and movement defaults for trips.",
+          },
+        },
       ],
     },
   },
@@ -246,8 +294,15 @@ Want me to build this around a specific destination and trip length?`,
 
 Individual hydration needs vary, so check with your provider if you have specific guidance to follow.`,
       actions: [
-        { label: "Save Hydration Routine", save: { title: "Everyday Hydration Routine", category: "Tips", summary: "Simple anchors for drinking more water." } },
-        { label: "Learn Hydration Basics", to: "/academy" },
+        {
+          label: "Save Hydration Routine",
+          save: {
+            title: "Everyday Hydration Routine",
+            category: "Tips",
+            summary: "Simple anchors for drinking more water.",
+          },
+        },
+        { label: "Hydration Section", to: "/hydration" },
       ],
     },
   },
@@ -267,7 +322,14 @@ Individual hydration needs vary, so check with your provider if you have specifi
 
 Consistency matters more than pace. If anything feels off, ease back and check in with your provider.`,
       actions: [
-        { label: "Save Walking Plan", save: { title: "Beginner Walking Routine", category: "Tips", summary: "A two-week gentle walking build-up." } },
+        {
+          label: "Save Walking Plan",
+          save: {
+            title: "Beginner Walking Routine",
+            category: "Tips",
+            summary: "A two-week gentle walking build-up.",
+          },
+        },
         { label: "Movement While Traveling", prompt: "How do I stay active while traveling?" },
       ],
     },
@@ -285,7 +347,14 @@ Consistency matters more than pace. If anything feels off, ease back and check i
 
 Pick one to start with this week — one is plenty.`,
       actions: [
-        { label: "Save Evening Routine", save: { title: "Simple Evening Routine", category: "Tips", summary: "Five steps for a calmer wind-down." } },
+        {
+          label: "Save Evening Routine",
+          save: {
+            title: "Simple Evening Routine",
+            category: "Tips",
+            summary: "Five steps for a calmer wind-down.",
+          },
+        },
         { label: "Help With Evening Snacking", prompt: "Help me with evening snacking." },
       ],
     },
@@ -303,8 +372,15 @@ Pick one to start with this week — one is plenty.`,
 
 Mindful eating is a practice, not a test.`,
       actions: [
-        { label: "Save Mindful Eating Tips", save: { title: "Mindful Eating Practices", category: "Tips", summary: "Gentle strategies for stress and evening snacking." } },
-        { label: "Open Academy Lesson", to: "/academy" },
+        {
+          label: "Save Mindful Eating Tips",
+          save: {
+            title: "Mindful Eating Practices",
+            category: "Tips",
+            summary: "Gentle strategies for stress and evening snacking.",
+          },
+        },
+        { label: "Mindful Eating Basics", prompt: "Teach me mindful eating." },
       ],
     },
   },
@@ -321,7 +397,14 @@ Mindful eating is a practice, not a test.`,
 
 Which one would you like to start with?`,
       actions: [
-        { label: "Save Habit Framework", save: { title: "Habit Building Framework", category: "Tips", summary: "Five steps for habits that stick." } },
+        {
+          label: "Save Habit Framework",
+          save: {
+            title: "Habit Building Framework",
+            category: "Tips",
+            summary: "Five steps for habits that stick.",
+          },
+        },
         { label: "Build a Morning Routine", prompt: "Help me build a morning routine." },
       ],
     },
@@ -345,24 +428,6 @@ You can save these and bring them along. Your provider knows your history — I'
     },
   },
   {
-    match: /(academy|lesson|learn|course)/i,
-    reply: {
-      text: `FitSlim Academy™ has short lessons you can finish in a coffee break.
-
-• Understanding Protein — 8 min
-• Building a Balanced Plate — 10 min
-• Hydration Basics — 6 min
-• Smart Restaurant Choices — 9 min
-• Creating Sustainable Habits — 12 min
-
-Want me to suggest the next lesson based on what you've been asking about?`,
-      actions: [
-        { label: "Open Academy", to: "/academy" },
-        { label: "Suggest My Next Lesson", prompt: "What lesson should I take next?" },
-      ],
-    },
-  },
-  {
     match: /(recipe|cook|dinner|lunch|snack)/i,
     reply: {
       text: `Here's an easy one that reheats well:
@@ -378,17 +443,30 @@ About 25 minutes start to finish, and it makes a great next-day lunch.`,
         title: "Sheet-Pan Salmon & Broccoli",
         minutes: 25,
         ingredients: ["Salmon fillets", "Broccoli", "Olive oil", "Lemon", "Garlic"],
-        steps: ["Heat oven to 425°F.", "Toss broccoli with oil.", "Add salmon to the pan.", "Roast 15 minutes.", "Finish with lemon."],
+        steps: [
+          "Heat oven to 425°F.",
+          "Toss broccoli with oil.",
+          "Add salmon to the pan.",
+          "Roast 15 minutes.",
+          "Finish with lemon.",
+        ],
       },
       actions: [
-        { label: "Save Recipe", save: { title: "Sheet-Pan Salmon & Broccoli", category: "Recipes", summary: "25-minute dinner that reheats well." } },
+        {
+          label: "Save Recipe",
+          save: {
+            title: "Sheet-Pan Salmon & Broccoli",
+            category: "Recipes",
+            summary: "25-minute dinner that reheats well.",
+          },
+        },
         { label: "Browse Recipes", to: "/recipes" },
       ],
     },
   },
 ];
 
-const fallback: Reply = {
+const generalFallback: Reply = {
   text: `I'm here for that. To point you in the most useful direction, tell me a bit more — are you thinking about meals, hydration, movement, sleep, travel, restaurants, healthy habits, or questions for your care team?
 
 You can also tap one of the suggestions to get started.`,
@@ -399,10 +477,48 @@ You can also tap one of the suggestions to get started.`,
   ],
 };
 
-export function generateReply(input: string): ChatMessage {
-  const rule = rules.find((r) => r.match.test(input));
-  const reply = rule ? rule.reply : fallback;
-  return { id: newId(), role: "ai", createdAt: Date.now(), ...reply };
+/**
+ * Urgent/emergency phrases always win, in any section, before anything else.
+ */
+const URGENT = /(emergency|chest pain|can'?t breathe|severe|fainted|passed out|bleeding)/i;
+const URGENT_REPLY: Reply = {
+  safety: "urgent",
+  text: `I'm not able to help with urgent or emergency symptoms.
+
+Please seek emergency medical care or contact your local emergency services right away.
+
+If this isn't urgent but still concerning, contact your care team — they know your history and can advise you directly.`,
+  actions: [{ label: "See Safety Information", to: "/safety" }],
+};
+
+/**
+ * Inside a section the assistant: 1) protects urgent cases, 2) uses that
+ * section's own knowledge + fallback, and 3) else falls back to general rules.
+ * The section's rules are tried before the broad safety rules so that the
+ * GLP-1 section can give a tailored, educational (non-prescribing) response to
+ * words like "nausea" without ever replacing provider guidance.
+ */
+export function generateReply(input: string, section: ConversationKey = "general"): ChatMessage {
+  const query = input.trim();
+
+  if (URGENT.test(query)) {
+    return { id: newId(), role: "ai", createdAt: Date.now(), ...URGENT_REPLY };
+  }
+
+  if (section !== "general") {
+    const sectionRule = SECTION_RULES[section].find((rule) => rule.match.test(query));
+    if (sectionRule) {
+      return { id: newId(), role: "ai", createdAt: Date.now(), ...sectionRule.reply };
+    }
+  }
+
+  const globalRule = rules.find((rule) => rule.match.test(query));
+  if (globalRule) {
+    return { id: newId(), role: "ai", createdAt: Date.now(), ...globalRule.reply };
+  }
+
+  const fallback = section !== "general" ? SECTION_FALLBACKS[section] : generalFallback;
+  return { id: newId(), role: "ai", createdAt: Date.now(), ...fallback };
 }
 
 export function userMessage(text: string): ChatMessage {

@@ -9,8 +9,8 @@ import { ContextPanel } from "./ContextPanel";
 import { useFitSlim } from "@/lib/fitslim/store";
 import { cn } from "@/lib/utils";
 
-// Standalone (public) pages render without the app shell.
-const STANDALONE_PATHS = ["/", "/login", "/marketing"];
+// Standalone (public + admin console) pages render without the app shell.
+const STANDALONE_PATHS = ["/", "/login", "/signup", "/marketing", "/admin"];
 
 export function AppShell() {
   const { panelOpen, togglePanel } = useFitSlim();
@@ -38,15 +38,20 @@ export function AppShell() {
               <SheetTrigger asChild>
                 <Button
                   size="icon"
-                  className="h-12 w-12 rounded-full bg-navy text-white shadow-lift hover:bg-deep-navy"
+                  className="h-12 w-12 rounded-full bg-teal text-white shadow-lift hover:bg-bright-teal"
                   aria-label="Open context panel"
                 >
                   <PanelRight className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[340px] overflow-y-auto rounded-l-[20px] bg-background">
+              <SheetContent
+                side="right"
+                className="w-[340px] overflow-y-auto rounded-l-[20px] bg-background"
+              >
                 <SheetHeader className="px-4">
-                  <SheetTitle className="font-display text-base font-bold text-navy">Your Context</SheetTitle>
+                  <SheetTitle className="font-display text-base font-bold text-navy">
+                    Your Context
+                  </SheetTitle>
                 </SheetHeader>
                 <div className="pt-2">
                   <ContextPanel />

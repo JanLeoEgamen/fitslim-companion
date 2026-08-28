@@ -3,7 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CheckSquare, Plus, Printer, ShoppingBasket, Square, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PageLayout } from "@/components/fitslim/PageLayout";
 import { PageHeader } from "@/components/fitslim/PageHeader";
 import { EmptyState } from "@/components/fitslim/EmptyState";
@@ -71,7 +77,11 @@ function GroceryList() {
             <SelectItem value="Pantry">Pantry</SelectItem>
           </SelectContent>
         </Select>
-        <Button onClick={handleAdd} disabled={!name.trim()} className="gap-1.5 rounded-[12px] bg-navy text-white hover:bg-deep-navy">
+        <Button
+          onClick={handleAdd}
+          disabled={!name.trim()}
+          className="gap-1.5 rounded-[12px] bg-teal text-white hover:bg-bright-teal"
+        >
           <Plus className="h-4 w-4" /> Add Item
         </Button>
       </div>
@@ -86,7 +96,9 @@ function GroceryList() {
         <div className="space-y-5">
           {sections.map(([sectionName, items]) => (
             <section key={sectionName}>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{sectionName}</h3>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {sectionName}
+              </h3>
               <ul className="space-y-2">
                 {items.map((item) => (
                   <li key={item.id}>
@@ -102,7 +114,12 @@ function GroceryList() {
                         onChange={() => toggleGrocery(item.id)}
                         className="size-4.5 accent-teal"
                       />
-                      <span className={cn("flex-1 text-sm", item.checked && "line-through text-muted-foreground")}>
+                      <span
+                        className={cn(
+                          "flex-1 text-sm",
+                          item.checked && "line-through text-muted-foreground",
+                        )}
+                      >
                         {item.name}
                       </span>
                       {item.checked && <CheckIcon />}
@@ -114,14 +131,26 @@ function GroceryList() {
           ))}
 
           <div className="flex flex-wrap gap-2 pt-1">
-            <Button variant="outline" className="gap-1.5 rounded-[12px] border-teal text-teal hover:bg-pale-teal" onClick={() => checkAllGrocery(!allChecked)}>
+            <Button
+              variant="outline"
+              className="gap-1.5 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
+              onClick={() => checkAllGrocery(!allChecked)}
+            >
               {allChecked ? <Square className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
               {allChecked ? "Uncheck All" : "Check All"}
             </Button>
-            <Button variant="outline" className="gap-1.5 rounded-[12px] text-navy hover:bg-pale-teal" onClick={() => window.print()}>
+            <Button
+              variant="outline"
+              className="gap-1.5 rounded-[12px] text-navy hover:bg-pale-teal"
+              onClick={() => window.print()}
+            >
               <Printer className="h-4 w-4" /> Print
             </Button>
-            <Button variant="ghost" className="gap-1.5 rounded-[12px] text-muted-foreground hover:text-destructive" onClick={clearGrocery}>
+            <Button
+              variant="ghost"
+              className="gap-1.5 rounded-[12px] text-muted-foreground hover:text-destructive"
+              onClick={clearGrocery}
+            >
               <Trash2 className="h-4 w-4" /> Clear
             </Button>
           </div>

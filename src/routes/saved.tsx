@@ -12,7 +12,7 @@ export const Route = createFileRoute("/saved")({
   component: Saved,
 });
 
-const CATEGORIES = ["All", "Recipes", "Meal Plans", "Tips", "Academy", "Conversations"] as const;
+const CATEGORIES = ["All", "Recipes", "Meal Plans", "Tips", "Conversations"] as const;
 
 function Saved() {
   const { saved } = useFitSlim();
@@ -30,7 +30,11 @@ function Saved() {
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="mb-5 h-auto flex-wrap gap-1 rounded-[16px] bg-muted p-1.5">
           {CATEGORIES.map((cat) => (
-            <TabsTrigger key={cat} value={cat} className="rounded-[12px] px-3 py-1.5 text-[13px] data-[state=active]:bg-navy data-[state=active]:text-white">
+            <TabsTrigger
+              key={cat}
+              value={cat}
+              className="rounded-[12px] px-3 py-1.5 text-[13px] data-[state=active]:bg-navy data-[state=active]:text-white"
+            >
               {cat}
             </TabsTrigger>
           ))}

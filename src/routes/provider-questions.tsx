@@ -36,10 +36,15 @@ function ProviderQuestions() {
         <h2 className="flex items-center gap-2 font-display text-base font-bold text-navy">
           <Sparkles className="h-4.5 w-4.5 text-teal" /> Suggested questions
         </h2>
-        <p className="mt-1 text-[13px] text-muted-foreground">Here are a few you may want to discuss:</p>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          Here are a few you may want to discuss:
+        </p>
         <ul className="mt-3 space-y-2">
           {PROVIDER_QUESTION_SUGGESTIONS.map((q) => (
-            <li key={q} className="flex items-center justify-between gap-3 rounded-[14px] border border-border bg-background px-4 py-3">
+            <li
+              key={q}
+              className="flex items-center justify-between gap-3 rounded-[14px] border border-border bg-background px-4 py-3"
+            >
               <span className="text-sm text-foreground">{q}</span>
               <Button
                 size="icon"
@@ -55,7 +60,9 @@ function ProviderQuestions() {
         </ul>
 
         <div className="mt-5 border-t pt-4">
-          <label htmlFor="custom-q" className="text-sm font-semibold text-navy">Add your own question</label>
+          <label htmlFor="custom-q" className="text-sm font-semibold text-navy">
+            Add your own question
+          </label>
           <div className="mt-2 flex flex-col gap-2 sm:flex-row">
             <Textarea
               id="custom-q"
@@ -69,7 +76,7 @@ function ProviderQuestions() {
               type="button"
               onClick={submitCustom}
               disabled={!custom.trim()}
-              className="gap-1.5 rounded-[12px] bg-navy text-white hover:bg-deep-navy sm:self-start"
+              className="gap-1.5 rounded-[12px] bg-teal text-white hover:bg-bright-teal sm:self-start"
             >
               <Plus className="h-4 w-4" /> Add
             </Button>
@@ -80,7 +87,9 @@ function ProviderQuestions() {
       <section className="mt-5">
         <h2 className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-navy">
           <CheckCircle2 className="h-5 w-5 text-teal" /> Saved Questions
-          <span className="text-sm font-normal text-muted-foreground">({providerQuestions.length})</span>
+          <span className="text-sm font-normal text-muted-foreground">
+            ({providerQuestions.length})
+          </span>
         </h2>
         {providerQuestions.length === 0 ? (
           <EmptyState
@@ -91,7 +100,10 @@ function ProviderQuestions() {
         ) : (
           <ul className="space-y-2.5">
             {providerQuestions.map((q) => (
-              <li key={q.id} className="flex items-center justify-between gap-3 rounded-[16px] border border-border bg-card px-4 py-3.5 shadow-soft">
+              <li
+                key={q.id}
+                className="flex items-center justify-between gap-3 rounded-[16px] border border-border bg-card px-4 py-3.5 shadow-soft"
+              >
                 <span className="text-sm text-foreground">{q.text}</span>
                 <Button
                   size="icon"
@@ -108,7 +120,10 @@ function ProviderQuestions() {
         )}
         {providerQuestions.length > 0 && (
           <div className="mt-4">
-            <AskAiButton label="Ask FitSlim AI" prompt="Help me prepare questions for my next provider visit." />
+            <AskAiButton
+              label="Ask FitSlim AI"
+              prompt="Help me prepare questions for my next provider visit."
+            />
           </div>
         )}
       </section>

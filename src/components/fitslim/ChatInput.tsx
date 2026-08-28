@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent, type Ref } from "react";
 import { Camera, ListPlus, Mic, Plus, Send, Upload, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,11 +16,17 @@ export function ChatInput({
   setDraft,
   onSend,
   disabled,
+  variant = "page",
+  placeholder = "Ask FitSlim AI anything about your wellness journey...",
+  inputRef,
 }: {
   draft: string;
   setDraft: (v: string) => void;
   onSend: (text: string) => void;
   disabled?: boolean;
+  variant?: "page" | "embedded";
+  placeholder?: string;
+  inputRef?: Ref<HTMLTextAreaElement>;
 }) {
   const [microphoneActive, setMicrophoneActive] = useState(false);
 
@@ -38,9 +44,11 @@ export function ChatInput({
     }
   };
 
+  const embedded = variant === "embedded";
+
   return (
-    <div className="border-t bg-background/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-1 px-4 py-3">
+    <div className={cn(!embedded && "border-t bg-background/95 backdrop-blur")}>
+      <div className={cn("mx-auto flex w-full gap-1", embedded ? "flex-col" : "max-w-3xl flex-col px-4 py-3")}>
         <div className="flex items-end gap-2 rounded-[20px] border border-border bg-card px-2.5 py-2 shadow-soft focus-within:border-teal/60">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -76,28 +84,31 @@ export function ChatInput({
           </DropdownMenu>
 
           <textarea
+            ref={inputRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask FitSlim AI anything about your wellness journey..."
+            placeholder={placeholder}
             rows={1}
             aria-label="Message FitSlim AI"
             className="max-h-32 min-h-[40px] flex-1 resize-none bg-transparent py-2 text-[15px] placeholder:text-muted-foreground/70 focus:outline-none"
             style={{ lineHeight: "1.4" }}
           />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "rounded-full",
-              microphoneActive ? "bg-teal/20 text-teal" : "text-muted-foreground hover:bg-pale-teal hover:text-navy",
-            )}
-            aria-label="Use microphone"
-            onClick={() => setMicrophoneActive((v) => !v)}
-          >
-            <Mic className="h-5 w-5" />
-          </Button>
+          {!embedded && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "rounded-full",
+                microphoneActive ? "bg-teal/20 text-teal" : "text-muted-foreground hover:bg-pale-teal hover:text-navy",
+              )}
+              aria-label="Use microphone"
+              onClick={() => setMicrophoneActive((v) => !v)}
+            >
+              <Mic className="h-5 w-5" />
+            </Button>
+          )}
 
           <Button
             size="icon"

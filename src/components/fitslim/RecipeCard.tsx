@@ -40,7 +40,10 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
             </p>
             <ol className="space-y-1 ps-5 text-sm text-muted-foreground">
               {recipe.steps.map((step, i) => (
-                <li key={i} className="list-decimal leading-relaxed marker:font-semibold marker:text-navy">
+                <li
+                  key={i}
+                  className="list-decimal leading-relaxed marker:font-semibold marker:text-navy"
+                >
                   {step}
                 </li>
               ))}
@@ -50,7 +53,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
         <div className="flex flex-wrap gap-2 pt-1">
           <Button
             size="sm"
-            className="rounded-[12px] bg-navy text-white hover:bg-deep-navy"
+            className="rounded-[12px] bg-teal text-white hover:bg-bright-teal"
             onClick={() =>
               saveItem({
                 title: recipe.title,

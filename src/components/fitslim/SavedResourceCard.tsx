@@ -8,7 +8,6 @@ const CATEGORY_TINT: Record<string, string> = {
   Recipes: "bg-pale-teal text-navy",
   "Meal Plans": "bg-soft-green text-navy",
   Tips: "bg-light-blue text-navy",
-  Academy: "bg-indigo/10 text-indigo",
   Conversations: "bg-purple/10 text-purple",
 };
 
@@ -32,7 +31,11 @@ export function SavedResourceCard({ item }: { item: SavedItem }) {
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <Button size="sm" variant="outline" className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1 rounded-[12px] border-teal text-teal hover:bg-pale-teal"
+        >
           <ExternalLink className="h-3.5 w-3.5" /> Open
         </Button>
         <Button

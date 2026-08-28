@@ -29,7 +29,9 @@ export type SafetyKind = keyof typeof SAFETY_COPY;
 export function SafetyBanner({ kind }: { kind: SafetyKind }) {
   const cfg = SAFETY_COPY[kind];
   return (
-    <div className={cn("fs-fade-in my-2.5 rounded-[16px] border border-teal/20 px-4 py-3", cfg.tint)}>
+    <div
+      className={cn("fs-fade-in my-2.5 rounded-[16px] border border-teal/20 px-4 py-3", cfg.tint)}
+    >
       <div className="flex items-start gap-2.5">
         <cfg.icon className="mt-0.5 h-4 w-4 shrink-0 text-navy" />
         <div className="min-w-0">
@@ -40,15 +42,28 @@ export function SafetyBanner({ kind }: { kind: SafetyKind }) {
               : "FitSlim AI provides educational support and does not replace your provider, diagnose, treat, or change medications."}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" className="rounded-[12px] border-navy bg-background text-navy hover:bg-pale-teal" asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-[12px] border-navy bg-background text-navy hover:bg-pale-teal"
+              asChild
+            >
               <Link to="/safety">See Safety Information</Link>
             </Button>
             {kind === "urgent" ? (
-              <Button size="sm" className="rounded-[12px] bg-navy text-white hover:bg-deep-navy" asChild>
+              <Button
+                size="sm"
+                className="rounded-[12px] bg-teal text-white hover:bg-bright-teal"
+                asChild
+              >
                 <Link to="/provider-questions">Contact My Care Team</Link>
               </Button>
             ) : (
-              <Button size="sm" className="rounded-[12px] bg-navy text-white hover:bg-deep-navy" asChild>
+              <Button
+                size="sm"
+                className="rounded-[12px] bg-teal text-white hover:bg-bright-teal"
+                asChild
+              >
                 <Link to="/provider-questions">Talk to My Provider</Link>
               </Button>
             )}

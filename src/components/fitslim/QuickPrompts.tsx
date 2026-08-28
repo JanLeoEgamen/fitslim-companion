@@ -1,10 +1,12 @@
-import { QUICK_PROMPTS } from "@/lib/fitslim/data";
+export type QuickPromptItem = { icon: string; label: string; prompt: string };
 
 export function QuickPrompts({
   onPick,
+  items,
   className,
 }: {
   onPick: (prompt: string) => void;
+  items: QuickPromptItem[];
   className?: string;
 }) {
   return (
@@ -13,7 +15,7 @@ export function QuickPrompts({
         Suggested to get you started
       </p>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {QUICK_PROMPTS.map((item) => (
+        {items.map((item) => (
           <button
             key={item.label}
             type="button"

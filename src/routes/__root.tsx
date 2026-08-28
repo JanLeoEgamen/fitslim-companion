@@ -10,6 +10,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AuthProvider, AuthGate, useAuth } from "../lib/auth";
 import { FitSlimProvider } from "../lib/fitslim/store";
 import { AppShell } from "../components/fitslim/AppShell";
 import { Toaster } from "../components/ui/sonner";
@@ -132,11 +133,22 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FitSlimProvider>
+      <AuthProvider>
+        <AuthenticatedApp />
+        <Toaster richColors position="top-center" />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
+
+function AuthenticatedApp() {
+  const { profile, accessToken } = useAuth();
+  return (
+    <AuthGate>
+      <FitSlimProvider profile={profile} accessToken={accessToken}>
         {/* Required: nested routes render inside AppShell's Outlet. */}
         <AppShell />
-        <Toaster richColors position="top-center" />
       </FitSlimProvider>
-    </QueryClientProvider>
+    </AuthGate>
   );
 }
