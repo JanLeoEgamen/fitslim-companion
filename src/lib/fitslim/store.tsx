@@ -40,6 +40,34 @@ import {
 } from "./persistence";
 
 export type ThemeMode = "light" | "dark" | "system";
+const STORAGE_KEY_PREFIX = "fitslim:conversations:v1:";
+function storageKey(uid: string): string {
+  return STORAGE_KEY_PREFIX + uid;
+}
+function loadStoredConversations(uid: string) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(storageKey(uid));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object")
+      return parsed as Partial<Record<ConversationKey, ChatMessage[]>>;
+    return null;
+  } catch {
+    return null;
+  }
+}
+function persistConversations(
+  uid: string,
+  conversations: Partial<Record<ConversationKey, ChatMessage[]>>,
+) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(storageKey(uid), JSON.stringify(conversations));
+  } catch {
+    // Storage full / unavailable — history is best-effort and non-fatal.
+  }
+}
 
 const seededMessages = (): ChatMessage[] => {
   const t = Date.now();
@@ -107,7 +135,6 @@ Want me to add anything else?`,
 type Prefs = {
   remember: boolean;
   usePastConversations: boolean;
-  responseStyle: string;
   favoriteFoods: string[];
   goals: string[];
   activityLevel: string;
@@ -213,12 +240,14 @@ type FitSlimProviderProps = {
   accessToken?: string | null;
 };
 
-export function FitSlimProvider({ children, profile = null, accessToken = null }: FitSlimProviderProps) {
+export function FitSlimProvider({
+  children,
+  profile = null,
+  accessToken = null,
+}: FitSlimProviderProps) {
   const [conversations, setConversations] = useState<
     Partial<Record<ConversationKey, ChatMessage[]>>
-  >({
-    general: seededMessages(),
-  });
+  >({});
   const [typing, setTyping] = useState<Partial<Record<ConversationKey, boolean>>>({});
   const [drafts, setDrafts] = useState<Partial<Record<ConversationKey, string>>>({});
   const [chatFocus, setChatFocus] = useState<ChatFocus | null>(null);
@@ -227,17 +256,28 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
   savedRef.current = saved;
   const [grocery, setGrocery] = useState<GroceryItem[]>(INITIAL_GROCERY);
   const [providerQuestions, setProviderQuestions] = useState<{ id: string; text: string }[]>([]);
+  // Tracks slices the user mutated locally so a slow/late member-data load
+  // cannot overwrite something they just added/removed/toggled.
+  const dirtyRef = useRef<{ saved: boolean; grocery: boolean; providerQuestions: boolean }>({
+    saved: false,
+    grocery: false,
+    providerQuestions: false,
+  });
+  const markSavedDirty = () => (dirtyRef.current.saved = true);
+  const markGroceryDirty = () => (dirtyRef.current.grocery = true);
+  const markQuestionsDirty = () => (dirtyRef.current.providerQuestions = true);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [member, setMember] = useState<typeof MEMBER>(() => toMember(profile));
   const conversationsRef = useRef(conversations);
+  const uidRef = useRef(profile?.id ?? "");
   conversationsRef.current = conversations;
+  uidRef.current = profile?.id ?? "";
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [prefs, setPrefsState] = useState<Prefs>({
     remember: true,
     usePastConversations: true,
-    responseStyle: MEMBER.responseStyle,
     favoriteFoods: MEMBER.favoriteFoods,
     goals: MEMBER.goals,
     activityLevel: MEMBER.activityLevel,
@@ -264,7 +304,7 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       setUsers([]);
     }
   }, [profile, accessToken]);
-// Load the member's persisted data when the user changes (or clears on logout).
+  // Load the member's persisted data when the user changes (or clears on logout).
   const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -278,7 +318,6 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     setPrefsState({
       remember: true,
       usePastConversations: true,
-      responseStyle: MEMBER.responseStyle,
       favoriteFoods: MEMBER.favoriteFoods,
       goals: MEMBER.goals,
       activityLevel: MEMBER.activityLevel,
@@ -286,6 +325,8 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       reducedMotion: false,
     });
     setLoadedUserId(uid);
+    // Reset dirty flags at the start of a load so a fresh load hydrates all slices.
+    dirtyRef.current = { saved: false, grocery: false, providerQuestions: false };
 
     if (!uid) return;
     let cancelled = false;
@@ -304,10 +345,28 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id]);
 
+  // Hydrate conversations from localStorage for this user. Keeps the seeded welcome
+  // only for brand-new users (nothing stored yet).
+  useEffect(() => {
+    const uid = profile?.id ?? "";
+    if (!uid) return;
+    const stored = loadStoredConversations(uid);
+    if (stored) {
+      setConversations(stored);
+    } else if (Object.keys(conversations).length === 0) {
+      setConversations({ general: seededMessages() });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id]);
+
   function applyLoadedMemberData(data: PersistedMemberData) {
-    setSaved(data.saved.length ? data.saved : INITIAL_SAVED);
-    setGrocery(data.grocery.length ? data.grocery : INITIAL_GROCERY);
-    setProviderQuestions(data.providerQuestions);
+    // Skip any slice the user has already changed locally since this load
+    // began, so a late-arriving response cannot wipe an item they just added.
+    if (!dirtyRef.current.saved && data.saved.length) setSaved(data.saved);
+    if (!dirtyRef.current.grocery && data.grocery.length) setGrocery(data.grocery);
+    if (!dirtyRef.current.providerQuestions) {
+      setProviderQuestions(data.providerQuestions.length ? data.providerQuestions : []);
+    }
 
     if (data.preferences) {
       const p = data.preferences;
@@ -322,7 +381,6 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       }));
     }
   }
-
   useEffect(() => {
     const root = document.documentElement;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -330,58 +388,68 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     root.classList.toggle("dark", dark);
   }, [theme]);
 
-  const send = useCallback(
-    async (key: ConversationKey, text: string) => {
-      const trimmed = text.trim();
-      if (!trimmed) return;
-      setConversations((c) => ({ ...c, [key]: [...(c[key] ?? []), userMessage(trimmed)] }));
-      setDrafts((d) => ({ ...d, [key]: "" }));
-      setTyping((t) => ({ ...t, [key]: true }));
+  const send = useCallback(async (key: ConversationKey, text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setConversations((c) => ({ ...c, [key]: [...(c[key] ?? []), userMessage(trimmed)] }));
+    persistConversations(uidRef.current, {
+      ...conversationsRef.current,
+      [key]: [...(conversationsRef.current[key] ?? []), userMessage(trimmed)],
+    });
+    setDrafts((d) => ({ ...d, [key]: "" }));
+    setTyping((t) => ({ ...t, [key]: true }));
 
-      try {
-        // Build a short history for context (user + assistant up to MAX_HISTORY).
-        const history = [...(conversationsRef.current[key] ?? []), userMessage(trimmed)];
-        const messages: AiChatMessage[] = history.slice(-12).map((m) => ({
-          role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
-          content: m.text,
-        }));
+    try {
+      // Build a short history for context (user + assistant up to MAX_HISTORY).
+      const history = [...(conversationsRef.current[key] ?? []), userMessage(trimmed)];
+      const messages: AiChatMessage[] = history.slice(-12).map((m) => ({
+        role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
+        content: m.text,
+      }));
 
-        const rawResult = await chatWithAi({ data: { messages, section: key } });
-        const result = rawResult as unknown as AiResponse;
-        const aiMessage: ChatMessage = {
-          id: newId(),
-          role: "ai",
-          createdAt: Date.now(),
-          text: result.text,
-          ...(result.actions && result.actions.length > 0 ? { actions: result.actions } : {}),
-        };
-        setConversations((c) => ({
-          ...c,
-          [key]: [...(c[key] ?? []), aiMessage],
-        }));
-      } catch (error) {
-        console.error("[fitslim-ai] chat failed:", error);
-        const fallback = generateReply(trimmed, key);
-        const fbMessage: ChatMessage = {
-          id: newId(),
-          role: "ai",
-          createdAt: Date.now(),
-          text: fallback.text,
-          ...(fallback.actions && fallback.actions.length > 0 ? { actions: fallback.actions } : {}),
-        };
-        setConversations((c) => ({
-          ...c,
-          [key]: [...(c[key] ?? []), fbMessage],
-        }));
-      } finally {
-        setTyping((t) => ({ ...t, [key]: false }));
-      }
-    },
-    [],
-  );
+      const rawResult = await chatWithAi({ data: { messages, section: key } });
+      const result = rawResult as unknown as AiResponse;
+      const aiMessage: ChatMessage = {
+        id: newId(),
+        role: "ai",
+        createdAt: Date.now(),
+        text: result.text,
+        ...(result.actions && result.actions.length > 0 ? { actions: result.actions } : {}),
+      };
+      setConversations((c) => ({
+        ...c,
+        [key]: [...(c[key] ?? []), aiMessage],
+      }));
+      persistConversations(uidRef.current, {
+        ...conversationsRef.current,
+        [key]: [...(conversationsRef.current[key] ?? []), aiMessage],
+      });
+    } catch (error) {
+      console.error("[fitslim-ai] chat failed:", error);
+      const fallback = generateReply(trimmed, key);
+      const fbMessage: ChatMessage = {
+        id: newId(),
+        role: "ai",
+        createdAt: Date.now(),
+        text: fallback.text,
+        ...(fallback.actions && fallback.actions.length > 0 ? { actions: fallback.actions } : {}),
+      };
+      setConversations((c) => ({
+        ...c,
+        [key]: [...(c[key] ?? []), fbMessage],
+      }));
+      persistConversations(uidRef.current, {
+        ...conversationsRef.current,
+        [key]: [...(conversationsRef.current[key] ?? []), fbMessage],
+      });
+    } finally {
+      setTyping((t) => ({ ...t, [key]: false }));
+    }
+  }, []);
 
   const resetChat = useCallback((key: ConversationKey) => {
     setConversations((c) => ({ ...c, [key]: [] }));
+    persistConversations(uidRef.current, { ...conversationsRef.current, [key]: [] });
   }, []);
 
   const setDraft = useCallback((key: ConversationKey, value: string) => {
@@ -404,7 +472,12 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
     }
     // Build the optimistic row OUTSIDE the state updater so the updater stays pure
     // (React can re-invoke updaters; the DB write must happen exactly once).
-    const local: SavedItem = { ...item, content: item.content ?? item.summary ?? "", id: newId(), savedAt: "Today" };
+    const local: SavedItem = {
+      ...item,
+      content: item.content ?? item.summary ?? "",
+      id: newId(),
+      savedAt: "Today",
+    };
     setSaved((s) => [local, ...s]);
     persistence
       .createSaved(local)
@@ -550,6 +623,7 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       saveItem,
       removeSaved: (id) => {
         setSaved((s) => s.filter((x) => x.id !== id));
+        markSavedDirty();
         persistence.deleteSaved(id).catch((error) => {
           console.error("[store] delete saved failed:", error);
         });
@@ -557,6 +631,7 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       },
       grocery,
       toggleGrocery: (id) => {
+        markGroceryDirty();
         setGrocery((g) => {
           const next = g.map((i) => (i.id === id ? { ...i, checked: !i.checked } : i));
           const item = next.find((i) => i.id === id);
@@ -569,20 +644,25 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
         });
       },
       addGrocery: (name, section) => {
+        markGroceryDirty();
         const local: GroceryItem = { id: newId(), name, section, checked: false };
         setGrocery((g) => [...g, local]);
         persistence
           .createGrocery(name, section)
           .then((row) => {
             setGrocery((cur) => cur.map((i) => (i.id === local.id ? row : i)));
+            toast.success("Item added", { description: name });
           })
           .catch((error) => {
             console.error("[store] add grocery failed:", error);
             setGrocery((cur) => cur.filter((i) => i.id !== local.id));
+            toast.error("Couldn't add item", {
+              description: error instanceof Error ? error.message : "Please try again.",
+            });
           });
-        toast.success("Item added", { description: name });
       },
       checkAllGrocery: (checked) => {
+        markGroceryDirty();
         setGrocery((g) => {
           const next = g.map((i) => ({ ...i, checked }));
           next.forEach((i) => {
@@ -592,6 +672,7 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
         });
       },
       clearGrocery: () => {
+        markGroceryDirty();
         setGrocery((g) => {
           g.forEach((i) => {
             persistence.deleteGrocery(i.id).catch(() => {});
@@ -602,23 +683,30 @@ export function FitSlimProvider({ children, profile = null, accessToken = null }
       },
       providerQuestions,
       addProviderQuestion: (text) => {
-        setProviderQuestions((q) => {
-          if (q.some((x) => x.text === text)) return q;
-          const local = { id: newId(), text };
-          persistence
-            .createProviderQuestion(text)
-            .then((row) => {
-              setProviderQuestions((cur) => cur.map((x) => (x.id === local.id ? row : x)));
-            })
-            .catch((error) => {
-              console.error("[store] add provider question failed:", error);
-              setProviderQuestions((cur) => cur.filter((x) => x.id !== local.id));
+        const exists = providerQuestions.some((x) => x.text === text);
+        if (exists) {
+          toast("Already saved", { description: "That question is already on your list." });
+          return;
+        }
+        markQuestionsDirty();
+        const local = { id: newId(), text };
+        setProviderQuestions((q) => [...q, local]);
+        persistence
+          .createProviderQuestion(text)
+          .then((row) => {
+            setProviderQuestions((cur) => cur.map((x) => (x.id === local.id ? row : x)));
+            toast.success("Question saved");
+          })
+          .catch((error) => {
+            console.error("[store] add provider question failed:", error);
+            setProviderQuestions((cur) => cur.filter((x) => x.id !== local.id));
+            toast.error("Couldn't save question", {
+              description: error instanceof Error ? error.message : "Please try again.",
             });
-          return [...q, local];
-        });
-        toast.success("Question saved");
+          });
       },
       removeProviderQuestion: (id) => {
+        markQuestionsDirty();
         setProviderQuestions((q) => q.filter((x) => x.id !== id));
         persistence.deleteProviderQuestion(id).catch((error) => {
           console.error("[store] delete provider question failed:", error);

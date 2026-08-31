@@ -42,9 +42,7 @@ export async function loadSaved(): Promise<SavedItem[]> {
   }));
 }
 
-export async function createSaved(
-  item: Omit<SavedItem, "id" | "savedAt">,
-): Promise<SavedItem> {
+export async function createSaved(item: Omit<SavedItem, "id" | "savedAt">): Promise<SavedItem> {
   const { data, error } = await supabase
     .from("saved_items")
     .insert({
@@ -162,7 +160,9 @@ export type PersistedPrefs = {
 export async function loadPreferences(): Promise<Partial<PersistedPrefs> | null> {
   const { data, error } = await supabase
     .from("preferences")
-    .select("theme, notifications, reduced_motion, remember, use_past_conversations, sidebar_collapsed")
+    .select(
+      "theme, notifications, reduced_motion, remember, use_past_conversations, sidebar_collapsed",
+    )
     .maybeSingle();
   if (error) throw new Error(errMsg(error));
   return (data as Partial<PersistedPrefs>) ?? null;
@@ -180,13 +180,22 @@ export type PersistedMemberData = {
 };
 
 export async function loadMemberData(): Promise<PersistedMemberData> {
-  const [saved, grocery, providerQuestions, preferences] = await Promise.all([
+  const [saved, grocery, providerQuestions, preferences] = await Promise.allSettled([
     loadSaved(),
     loadGrocery(),
     loadProviderQuestions(),
     loadPreferences(),
   ]);
-  return { saved, grocery, providerQuestions, preferences };
+
+  // Even if one slice fails (e.g. a transient RLS/network error), still return
+  // the slices that succeeded so the member UI never goes blank and the user
+  // can keep working. Each failed slice returns [].
+  return {
+    saved: saved.status === "fulfilled" ? saved.value : [],
+    grocery: grocery.status === "fulfilled" ? grocery.value : [],
+    providerQuestions: providerQuestions.status === "fulfilled" ? providerQuestions.value : [],
+    preferences: preferences.status === "fulfilled" ? preferences.value : null,
+  };
 }
 
 export const persistence = {

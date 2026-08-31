@@ -34,91 +34,6 @@ export type AdminUser = {
   goals: string[];
 };
 
-/**
- * Baseline mock accounts for the admin area. This is demo data that mirrors
- * the shape a future accounts API (e.g. Supabase auth + a profiles table)
- * would return, so the store methods can be re-implemented against a backend
- * without changing the UI.
- */
-export const INITIAL_USERS: AdminUser[] = [
-  {
-    id: "u1",
-    name: "Sarah Johnson",
-    firstName: "Sarah",
-    email: "sarah.johnson@fitslim.demo",
-    memberId: "FS-10482",
-    role: "admin",
-    status: "active",
-    memberSince: "2026-03-14",
-    lastActive: "2026-08-26T09:12:00.000Z",
-    goals: [
-      "Healthy weight management",
-      "Improve nutrition consistency",
-      "Increase daily movement",
-    ],
-  },
-  {
-    id: "u2",
-    name: "Marcus Morgan",
-    firstName: "Marcus",
-    email: "marcus.morgan@fitslim.demo",
-    memberId: "FS-10731",
-    role: "member",
-    status: "active",
-    memberSince: "2026-05-02",
-    lastActive: "2026-08-25T18:40:00.000Z",
-    goals: ["Improve hydration", "Build a bedtime routine"],
-  },
-  {
-    id: "u3",
-    name: "Jessica Rivera",
-    firstName: "Jessica",
-    email: "jessica.rivera@fitslim.demo",
-    memberId: "FS-10855",
-    role: "member",
-    status: "active",
-    memberSince: "2026-06-20",
-    lastActive: "2026-08-26T07:05:00.000Z",
-    goals: ["Meal prep on weekends", "Walk 8,000 steps"],
-  },
-  {
-    id: "u4",
-    name: "Emily Watson",
-    firstName: "Emily",
-    email: "emily.watson@fitslim.demo",
-    memberId: "FS-10978",
-    role: "member",
-    status: "active",
-    memberSince: "2026-07-08",
-    lastActive: "2026-08-24T21:18:00.000Z",
-    goals: ["Hydration reminders", "High-protein meals"],
-  },
-  {
-    id: "u5",
-    name: "Priya Sharma",
-    firstName: "Priya",
-    email: "priya.sharma@fitslim.demo",
-    memberId: "FS-11002",
-    role: "member",
-    status: "invited",
-    memberSince: "2026-08-24",
-    lastActive: null,
-    goals: ["Healthy weight management"],
-  },
-  {
-    id: "u6",
-    name: "David Okafor",
-    firstName: "David",
-    email: "david.okafor@fitslim.demo",
-    memberId: "FS-10640",
-    role: "member",
-    status: "suspended",
-    memberSince: "2026-04-11",
-    lastActive: "2026-07-30T14:22:00.000Z",
-    goals: ["Sleep routine", "Stress management"],
-  },
-];
-
 export type QuickPromptItem = { icon: string; label: string; prompt: string };
 
 export const QUICK_PROMPTS: QuickPromptItem[] = [
@@ -355,7 +270,8 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Recipes",
     savedAt: "Aug 19, 2026",
     summary: "Five quick breakfasts built around protein.",
-    content: "Five quick breakfasts built around protein. Try a Greek yogurt power bowl, an egg scramble, or overnight oats with protein powder.",
+    content:
+      "Five quick breakfasts built around protein. Try a Greek yogurt power bowl, an egg scramble, or overnight oats with protein powder.",
   },
   {
     id: "s2",
@@ -363,7 +279,8 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Tips",
     savedAt: "Aug 18, 2026",
     summary: "How to read any menu with confidence.",
-    content: "How to read any menu with confidence. Look for grilled, baked or steamed options, ask for sauces on the side, and lead with vegetables and a lean protein.",
+    content:
+      "How to read any menu with confidence. Look for grilled, baked or steamed options, ask for sauces on the side, and lead with vegetables and a lean protein.",
   },
   {
     id: "s3",
@@ -371,7 +288,8 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Meal Plans",
     savedAt: "Aug 17, 2026",
     summary: "Higher-protein breakfasts, lunches and dinners.",
-    content: "A higher-protein plan across three easy days. Breakfasts, lunches and dinners built around lean protein, vegetables and whole grains.",
+    content:
+      "A higher-protein plan across three easy days. Breakfasts, lunches and dinners built around lean protein, vegetables and whole grains.",
   },
   {
     id: "s4",
@@ -379,7 +297,8 @@ export const INITIAL_SAVED: SavedItem[] = [
     category: "Tips",
     savedAt: "Aug 15, 2026",
     summary: "A gentle two-week walking build-up.",
-    content: "A gentle two-week walking build-up. Start with 10–15 minute walks and add a few minutes each day as you feel ready.",
+    content:
+      "A gentle two-week walking build-up. Start with 10–15 minute walks and add a few minutes each day as you feel ready.",
   },
 ];
 

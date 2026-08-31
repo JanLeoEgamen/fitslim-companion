@@ -58,7 +58,7 @@ function History() {
       const k = key as ConversationKey;
       const meta = KEY_META[k] ?? { label: k, path: "/chat" };
       const firstUser = msgs.find((m) => m.role === "user");
-      const firstAi = msgs.find((m) => m.role === "ai");
+      const lastUser = [...msgs].reverse().find((m) => m.role === "user");
       const last = msgs[msgs.length - 1];
       const lastAt = last?.createdAt ?? 0;
       return [
@@ -67,8 +67,10 @@ function History() {
           key: k,
           path: meta.path,
           label: meta.label,
-          title: truncate(firstUser?.text ?? meta.label),
-          preview: truncate(firstAi?.text ?? last?.text ?? ""),
+          // Title/preview reflect the LATEST activity, not the first (seed) message,
+          // so a freshly sent prompt shows up immediately.
+          title: truncate(lastUser?.text ?? firstUser?.text ?? meta.label),
+          preview: truncate(last?.text ?? ""),
           lastAt,
           group: groupLabel(lastAt),
         },
@@ -142,8 +144,12 @@ function History() {
                             {item.label}
                           </span>
                         </div>
-                        <p className="mt-1.5 truncate text-sm font-semibold text-navy">{item.title}</p>
-                        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">{item.preview}</p>
+                        <p className="mt-1.5 truncate text-sm font-semibold text-navy">
+                          {item.title}
+                        </p>
+                        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+                          {item.preview}
+                        </p>
                       </div>
                       <Button
                         size="sm"

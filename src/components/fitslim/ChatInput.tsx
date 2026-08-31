@@ -1,14 +1,7 @@
-import { useState, type KeyboardEvent, type Ref } from "react";
-import { Camera, ListPlus, Mic, Plus, Send, Upload, UtensilsCrossed } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent, type Ref } from "react";
+import { Mic, Send } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 export function ChatInput({
@@ -29,6 +22,7 @@ export function ChatInput({
   inputRef?: Ref<HTMLTextAreaElement>;
 }) {
   const [microphoneActive, setMicrophoneActive] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const submit = () => {
     const value = draft.trim();
@@ -44,45 +38,97 @@ export function ChatInput({
     }
   };
 
+  const stopListening = () => {
+    const rec = recognitionRef.current;
+    if (rec) {
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      rec.stop();
+      recognitionRef.current = null;
+    }
+    setMicrophoneActive(false);
+  };
+
+  const toggleMic = () => {
+    if (microphoneActive) {
+      stopListening();
+      return;
+    }
+
+    const SpeechRecognitionCtor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) {
+      toast.error("Voice input isn't supported", {
+        description: "Try Google Chrome, Microsoft Edge, or Safari.",
+      });
+      return;
+    }
+
+    const rec = new SpeechRecognitionCtor();
+    rec.lang = "en-US";
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    let finalTranscript = "";
+    rec.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (!result) continue;
+        const transcript = result[0]?.transcript ?? "";
+        if (result.isFinal) finalTranscript += transcript;
+        else interim += transcript;
+      }
+      setDraft((finalTranscript + interim).trimStart());
+    };
+    rec.onerror = () => {
+      stopListening();
+      toast.error("Couldn't start voice input", {
+        description: "Microphone permission may be needed.",
+      });
+    };
+    rec.onend = () => {
+      recognitionRef.current = null;
+      setMicrophoneActive(false);
+    };
+
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+      setMicrophoneActive(true);
+    } catch {
+      toast.error("Couldn't start voice input", {
+        description: "Microphone permission may be needed.",
+      });
+    }
+  };
+
+  // Abort any in-flight recognition session when the chat input unmounts.
+  useEffect(() => {
+    return () => {
+      const rec = recognitionRef.current;
+      if (rec) {
+        rec.onresult = null;
+        rec.onerror = null;
+        rec.onend = null;
+        rec.abort();
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
   const embedded = variant === "embedded";
 
   return (
     <div className={cn(!embedded && "border-t bg-background/95 backdrop-blur")}>
-      <div className={cn("mx-auto flex w-full gap-1", embedded ? "flex-col" : "max-w-3xl flex-col px-4 py-3")}>
+      <div
+        className={cn(
+          "mx-auto flex w-full gap-1",
+          embedded ? "flex-col" : "max-w-3xl flex-col px-4 py-3",
+        )}
+      >
         <div className="flex items-end gap-2 rounded-[20px] border border-border bg-card px-2.5 py-2 shadow-soft focus-within:border-teal/60">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full text-muted-foreground hover:bg-pale-teal hover:text-navy"
-                aria-label="Add attachment"
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52 rounded-[14px]">
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Attach</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="rounded-[10px]">
-                <Upload className="h-4 w-4 text-teal" />
-                Upload
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-[10px]">
-                <ListPlus className="h-4 w-4 text-teal" />
-                Saved foods
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-[10px]">
-                <UtensilsCrossed className="h-4 w-4 text-teal" />
-                Recipe
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-[10px]">
-                <Camera className="h-4 w-4 text-teal" />
-                Camera
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           <textarea
             ref={inputRef}
             value={draft}
@@ -101,10 +147,12 @@ export function ChatInput({
               size="icon"
               className={cn(
                 "rounded-full",
-                microphoneActive ? "bg-teal/20 text-teal" : "text-muted-foreground hover:bg-pale-teal hover:text-navy",
+                microphoneActive
+                  ? "bg-teal/20 text-teal"
+                  : "text-muted-foreground hover:bg-pale-teal hover:text-navy",
               )}
-              aria-label="Use microphone"
-              onClick={() => setMicrophoneActive((v) => !v)}
+              aria-label={microphoneActive ? "Stop voice input" : "Start voice input"}
+              onClick={toggleMic}
             >
               <Mic className="h-5 w-5" />
             </Button>

@@ -1,4 +1,4 @@
-import { Bookmark, Check, ChevronRight } from "lucide-react";
+import { Bookmark, Check, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { AiMark } from "./AiMark";
@@ -58,9 +58,15 @@ export function SafeLink({ to }: { to: KnownPath | string }) {
 export function MessageBubble({
   message,
   conversationKey = "general",
+  collapsed = false,
+  onToggleCollapsed,
 }: {
   message: ChatMessage;
   conversationKey?: ConversationKey;
+  /** Compact preview used for older AI answers; click to expand again. */
+  collapsed?: boolean;
+  /** Called when the user toggles a collapsed AI answer open/closed. */
+  onToggleCollapsed?: () => void;
 }) {
   const { send, saveItem, saved } = useFitSlim();
   const isUser = message.role === "user";
@@ -93,6 +99,36 @@ export function MessageBubble({
     );
   }
 
+  if (collapsed) {
+    return (
+      <div className="fs-fade-in flex items-start gap-2.5">
+        <AiMark size={32} className="mt-1" />
+        <div className="max-w-[88%] min-w-0 flex-1 sm:max-w-[78%]">
+          <div className="rounded-[20px] rounded-tl-md border border-border bg-card px-4 py-3 shadow-soft">
+            {message.safety && <SafetyBanner kind={message.safety as SafetyKind} />}
+            <div className="line-clamp-3 text-[15px] leading-relaxed text-muted-foreground">
+              <Markdown text={message.text} />
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border/70 pt-2">
+              {onToggleCollapsed && (
+                <button
+                  type="button"
+                  onClick={onToggleCollapsed}
+                  aria-expanded={false}
+                  aria-label="Show full answer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal transition hover:text-bright-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                  Show full answer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fs-fade-in flex items-start gap-2.5">
       <AiMark size={32} className="mt-1" />
@@ -118,7 +154,11 @@ export function MessageBubble({
                       <Check className="h-3.5 w-3.5 text-teal" /> Saved
                     </Button>
                   ) : (
-                    <SaveConfirmDialog key={index} onConfirm={() => saveItem(saveValue)} title={saveValue.title}>
+                    <SaveConfirmDialog
+                      key={index}
+                      onConfirm={() => saveItem(saveValue)}
+                      title={saveValue.title}
+                    >
                       <Button
                         size="sm"
                         variant="outline"
